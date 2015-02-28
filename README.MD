@@ -4,7 +4,7 @@ LIGHTING FRAMEWORK
 #### LIGHTING FRAMEWORK FOR PHP
 _______________________________________________________________________
 
-PHP Framework for developers-
+PHP Framework for developers.
 
 **Changelog**
 _______________
