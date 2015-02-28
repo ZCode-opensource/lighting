@@ -1,0 +1,28 @@
+{
+    "name": "zcode-lighting",
+    "type": "library",
+    "description": "Zcode Lighting framework for PHP",
+    "version": "0.0.1-dev",
+    "license": "MIT",
+    "authors": [
+        {
+          "name": "Alvaro Somoza",
+          "email": "asomoza@zcode.cl",
+          "homepage": "http://www.zcode.cl",
+          "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4",
+        "monolog/monolog": "1.11.*"
+    },
+    "require-dev": {
+        "phpdocumentor/phpdocumentor": "2.*",
+        "phpunit/phpunit": "4.2.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Lighting\\" : "src/ZCode/Lighting"
+        }
+    }
+}
