@@ -1,5 +1,5 @@
 {
-    "name": "zcode-lighting",
+    "name": "zcode/lighting",
     "type": "library",
     "description": "Zcode Lighting framework for PHP",
     "version": "0.0.1-dev",
