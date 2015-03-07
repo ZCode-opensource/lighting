@@ -2,7 +2,6 @@
     "name": "zcode/lighting",
     "type": "library",
     "description": "Zcode Lighting framework for PHP",
-    "version": "0.0.1-dev",
     "license": "MIT",
     "homepage": "http://www.zcode.cl/lighting",
     "authors": [
