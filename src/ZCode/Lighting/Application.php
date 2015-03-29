@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the ZCode Web Framework.
+ * This file is part of the ZCode Lighting Web Framework.
  *
  * (c) Álvaro Somoza <asomoza@zcode.cl>
  *
@@ -11,11 +11,11 @@
 
 namespace ZCode\Lighting;
 
-use ZCode\Lighting\Configuration;
+use ZCode\Lighting\Configuration\Configuration;
 use ZCode\Lighting\Http\Request;
 use ZCode\Lighting\Http\Response;
 use ZCode\Lighting\Http\ServerInfo;
-use ZCode\Lighting\Sesion\Sesion;
+use ZCode\Lighting\Session\Session;
 
 use Monolog\Logger;
 
@@ -26,6 +26,7 @@ class Application
     private $request;
     private $response;
     private $serverInfo;
+    private $logger;
 
     public function __construct()
     {
@@ -37,7 +38,7 @@ class Application
             $this->config->getConfig('site', 'relative_path', false)
         );
 
-        if ($this->conf->error) {
+        if ($this->config->error) {
             // TODO: Make an error showing system
             return;
         }
@@ -48,6 +49,23 @@ class Application
 
     public function render()
     {
+        $this->sesion = new Session();
+    }
 
+    private function getDisplayErrors()
+    {
+        $displayErrors = $this->config->getConfig(
+            'application',
+            'show_errors',
+            true
+        );
+
+        $errorVar = '1';
+
+        if ($displayErrors) {
+            $errorVar = '1';
+        }
+
+        return $errorVar;
     }
 }

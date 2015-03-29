@@ -4,7 +4,7 @@ namespace ZCode\Lighting\Http;
 
 use ZCode\Lighting\Http\BaseHttp;
 
-class Response extends HttpBase
+class Response extends BaseHttp
 {
     public function generateError()
     {

@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the ZCode Lighting Web Framework.
+ *
+ * (c) Álvaro Somoza <asomoza@zcode.cl>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace ZCode\Lighting\Configuration;
 
 class Configuration
@@ -14,12 +23,17 @@ class Configuration
     {
         $this->error = false;
 
+        if (!file_exists($file)) {
+            // TODO: no config file found, maybe load a simple one?
+            return;
+        }
+
         if (!$this->data = parse_ini_file($file, true)) {
             $this->error = true;
         }
     }
 
-    private function getConfig($boolean)
+    public function getConfig($section, $field, $boolean)
     {
         $data = false;
 
@@ -36,7 +50,7 @@ class Configuration
     {
         $text = '';
 
-        $text = $this->$data[$this->setcion][$this->field];
+        $text = $this->data[$this->section][$this->field];
 
         return $text;
     }
@@ -51,5 +65,10 @@ class Configuration
         }
 
         return $boolean;
+    }
+
+    private function createBaseConfig()
+    {
+
     }
 }

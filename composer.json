@@ -23,7 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Lighting\\" : "src/ZCode/Lighting"
+            "ZCode\\Lighting\\" : "src/ZCode/Lighting"
         }
     }
 }
