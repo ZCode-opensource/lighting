@@ -18,20 +18,27 @@ use ZCode\Lighting\Http\ServerInfo;
 use ZCode\Lighting\Session\Session;
 
 use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 class Application
 {
     private $error;
-    private $config;
+    private $config;    
     private $request;
     private $response;
     private $serverInfo;
     private $logger;
 
     public function __construct()
-    {
+    {           
         $this->error      = true;
         $this->config     = new Configuration('framework.conf');
+        
+        $logger   = new Logger('Main');
+        $logLevel = Logger::DEBUG;
+        
+        $logger->pushHandler(new StreamHandler('app.log', $logLevel));
+                
         $this->request    = new Request();
         $this->reponse    = new Response();
         $this->serverInfo = new ServerInfo(

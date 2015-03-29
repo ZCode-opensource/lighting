@@ -12,7 +12,7 @@
 namespace ZCode\Lighting\Factory;
 
 class BaseFactory
-{
+{    
     private $logger;
     private $debug;
 
@@ -20,4 +20,6 @@ class BaseFactory
     {
 
     }
+    
+    
 }
