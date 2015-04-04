@@ -4,8 +4,11 @@ namespace ZCode\Lighting\Object;
 
 abstract class BaseObject
 {
-    public function __construct($logger, $debug)
+    protected $logger;
+
+    public function __construct($logger)
     {
+        $this->logger = $logger;
         $this->init();
     }
 
