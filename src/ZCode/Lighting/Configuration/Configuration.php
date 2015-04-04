@@ -24,18 +24,22 @@ class Configuration
         $this->error = false;
 
         if (!file_exists($file)) {
-            // TODO: no config file found, maybe load a simple one?
+            // TODO: no config file found, maybe load a simple one with defaults?
+            $this->error = true;
             return;
         }
 
-        if (!$this->data = parse_ini_file($file, true)) {
-            $this->error = true;
+        if ($this->data = parse_ini_file($file, true)) {
+            // TODO: set in some way a loaded state so the framework knows the file loaded
+            return;
         }
     }
 
     public function getConfig($section, $field, $boolean)
     {
         $data = false;
+        $this->section = $section;
+        $this->field   = $field;
 
         if ($boolean) {
             $data = $this->getBoolean();
@@ -65,10 +69,5 @@ class Configuration
         }
 
         return $boolean;
-    }
-
-    private function createBaseConfig()
-    {
-
     }
 }

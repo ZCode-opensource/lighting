@@ -13,8 +13,6 @@ namespace ZCode\Lighting\Session;
 
 class Session
 {
-    private $module;
-
     public function __construct()
     {
 
