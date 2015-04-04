@@ -2,7 +2,7 @@
 
 namespace ZCode\Lighting\Http;
 
-use ZCode\Lighting\Http\BaseHttp;
+use ZCode\Lighting\Configuration\Configuration;
 
 /**
  * @SuppressWarnings(PHPMD.Superglobals)
@@ -61,7 +61,7 @@ class Request extends BaseHttp
 
     private function sanitizeVar($value, $type)
     {
-        $validated;
+        $validated = false;
 
         switch ($type) {
             case self::BOOLEAN:
@@ -85,22 +85,22 @@ class Request extends BaseHttp
                 break;
         }
 
-        if ($validated) {
-            return false;
+        if (!$validated) {
+            return $validated;
         }
 
         return $value;
     }
 
-    public function getModule(\Lighting\Configuration\Configuration $conf)
+    public function getModule(Configuration $config)
     {
-        $internalPath = $conf->getConfig('site', 'internal_path');
+        $internalPath = $config->getConfig('site', 'internal_path', false);
 
         $path = '';
         $module = $_SERVER['REQUEST_URI'];
 
         if ($internalPath) {
-            $path = $conf->getConfig('site', 'relative_path', false);
+            $path = $config->getConfig('site', 'relative_path', false);
             $module = $this->strReplaceFirst($path, '', $_SERVER['REQUEST_URI']);
         }
 

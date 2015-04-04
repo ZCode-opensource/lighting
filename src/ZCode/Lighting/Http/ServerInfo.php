@@ -1,23 +1,22 @@
 <?php
 
 namespace ZCode\Lighting\Http;
-
-use ZCode\Lighting\BaseObject;
+use ZCode\Lighting\Object\BaseObject;
 
 /**
  * @SuppressWarnings(PHPMD.Superglobals)
  * @SuppressWarnings(PHPMD.CamelCaseVariableName)
  */
-class ServerInfo
+class ServerInfo extends BaseObject
 {
     const BASE_URL = 1;
     const DOC_ROOT = 2;
 
     private $relativePath;
 
-    public function __construct($relativePath)
+    public function setRelativePath($path)
     {
-        $this->relativePath = $relativePath;
+        $this->relativePath = $path;
     }
 
     public function getVar($name)
@@ -29,7 +28,7 @@ class ServerInfo
                 $value = $this->getBaseUrl();
                 break;
             case self::DOC_ROOT:
-                $value = $_SERVER['DOCUMENT_ROOT'].$this->relativePath();
+                $value = $_SERVER['DOCUMENT_ROOT'].$this->relativePath;
                 break;
         }
 
