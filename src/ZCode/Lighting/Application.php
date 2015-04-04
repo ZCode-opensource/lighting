@@ -12,10 +12,7 @@
 namespace ZCode\Lighting;
 
 use ZCode\Lighting\Configuration\Configuration;
-use ZCode\Lighting\Http\Request;
-use ZCode\Lighting\Http\Response;
-use ZCode\Lighting\Http\ServerInfo;
-use ZCode\Lighting\Session\Session;
+use ZCode\Lighting\Factory\MainFactory;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -23,40 +20,53 @@ use Monolog\Handler\StreamHandler;
 class Application
 {
     private $error;
-    private $config;    
+    private $config;
+    private $mainFactory;
     private $request;
     private $response;
     private $serverInfo;
     private $logger;
+    private $session;
 
     public function __construct()
-    {           
+    {
         $this->error      = true;
         $this->config     = new Configuration('framework.conf');
         
-        $logger   = new Logger('Main');
-        $logLevel = Logger::DEBUG;
+        $this->logger   = new Logger('Main');
+        $logLevel       = $this->getLogLevel();
         
-        $logger->pushHandler(new StreamHandler('app.log', $logLevel));
-                
-        $this->request    = new Request();
-        $this->reponse    = new Response();
-        $this->serverInfo = new ServerInfo(
-            $this->config->getConfig('site', 'relative_path', false)
-        );
+        $this->logger->pushHandler(new StreamHandler('app.log', $logLevel));
 
         if ($this->config->error) {
             // TODO: Make an error showing system
+            $this->logger->addError("Couldn't load configuration file");
             return;
         }
 
         $displayErrors = $this->getDisplayErrors();
         ini_set('display_errors', $displayErrors);
+
+        $this->mainFactory = new MainFactory($this->logger);
+
+        $this->request    = $this->mainFactory->create(MainFactory::REQUEST);
+        $this->reponse    = $this->mainFactory->create(MainFactory::RESPONSE);
+        $this->serverInfo = $this->mainFactory->create(MainFactory::SERVER_INFO);
+
+        $relativePath = $this->config->getConfig('site', 'relative_path', false);
+        $this->serverInfo->setRelativePath($relativePath);
     }
 
     public function render()
     {
-        $this->sesion = new Session();
+        $this->session = $this->mainFactory->create(MainFactory::SESSION);
+    }
+
+    private function getLogLevel()
+    {
+        $logLevelValue = Logger::DEBUG;
+
+        return $logLevelValue;
     }
 
     private function getDisplayErrors()
