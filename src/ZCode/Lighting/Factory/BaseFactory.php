@@ -11,15 +11,17 @@
 
 namespace ZCode\Lighting\Factory;
 
-class BaseFactory
-{    
-    private $logger;
-    private $debug;
+use ZCode\Lighting\Object\BaseObject;
 
-    public function __construct($logger, $debug)
+abstract class BaseFactory extends BaseObject
+{
+    abstract protected function createObject($type);
+
+    public function create($type)
     {
+        $obj = $this->createObject($type);
+        // $obj->setLogger($this->logger);
 
+        return $obj;
     }
-    
-    
 }
