@@ -11,10 +11,13 @@
 
 namespace ZCode\Lighting\Session;
 
-class Session
-{
-    public function __construct()
-    {
+use ZCode\Lighting\Object\BaseObject;
 
-    }
+/**
+ * @SuppressWarnings(PHPMD.Superglobals)
+ * @SuppressWarnings(PHPMD.CamelCaseVariableName)
+ */
+class Session extends BaseObject
+{
+
 }

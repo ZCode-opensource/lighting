@@ -28,7 +28,7 @@ class MainFactory extends BaseFactory
             'Http\Request',
             'Http\Response',
             'Http\ServerInfo',
-            'Http\Session\Session'
+            'Session\Session'
         );
 
         $this->logger->addDebug('MainFactory initialized.');
