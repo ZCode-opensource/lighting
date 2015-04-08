@@ -19,6 +19,7 @@ class ModuleFactory extends BaseFactory
     public $session;
     public $serverInfo;
     public $ajax;
+    public $projectNamespace;
 
     protected function init()
     {
@@ -33,10 +34,11 @@ class ModuleFactory extends BaseFactory
         $classR = new \ReflectionClass($class);
         $obj    = $classR->newInstance($this->logger);
 
-        $obj->request    = $this->request;
-        $obj->session    = $this->session;
-        $obj->serverInfo = $this->serverInfo;
-        $obj->ajax       = $this->ajax;
+        $obj->request          = $this->request;
+        $obj->session          = $this->session;
+        $obj->serverInfo       = $this->serverInfo;
+        $obj->ajax             = $this->ajax;
+        $obj->projectNamespace = $this->projectNamespace;
 
         return $obj;
     }

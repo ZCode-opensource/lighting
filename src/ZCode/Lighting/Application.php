@@ -117,18 +117,21 @@ class Application
 
     private function generateModuleResponse($module, $ajax)
     {
-        $html = '';
+        $response = '';
 
         $moduleFactory             = new ModuleFactory($this->logger);
         $moduleFactory->request    = $this->request;
         $moduleFactory->serverInfo = $this->serverInfo;
         $moduleFactory->session    = $this->session;
-        $moduleFactory->ajax       = $this->ajax;
-        $this->module              = $moduleFactory->create(ModuleFactory::MODULE);
+        $moduleFactory->ajax       = $ajax;
 
-        $this->module->setModuleName($module);
+        $moduleFactory->projectNamespace = $this->config->getConfig('application', 'project_namespace', false);
+        $mainModule = $moduleFactory->create(ModuleFactory::MODULE);
 
-        return $html;
+        $mainModule->setModuleName($module);
+        $response = $mainModule->getResponse();
+
+        return $response;
     }
 
     private function renderResponse($response, $ajax)

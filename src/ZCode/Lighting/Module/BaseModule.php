@@ -20,14 +20,36 @@ class BaseModule extends BaseObject
     public $session;
     public $serverInfo;
     public $ajax;
+    public $projectNamespace;
+
+    private $controller;
 
     public function setModuleName($name)
     {
         $this->moduleName = $name;
     }
 
+    private function moduleInit()
+    {
+        $class = $this->projectNamespace.'\Modules\\'.$this->moduleName.'\Controller';
+
+        try {
+            $rClass = new \ReflectionClass($class);
+        } catch (\ReflectionException $ex) {
+            // TODO: Generate error
+            $rClass = null;
+        }
+
+        $this->controller                   = $rClass->newInstance($this->logger);
+        $this->controller->request          = $this->request;
+        $this->controller->response         = $this->getResponse;
+        $this->controller->serverInfo       = $this->serverInfo;
+        $this->controller->session          = $this->session;
+        $this->controller->projectNamespace = $this->projectNamespace;
+    }
+
     public function getResponse()
     {
-
+        $this->moduleInit();
     }
 }
