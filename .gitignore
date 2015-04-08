@@ -1,6 +1,14 @@
-# Proyect
+# Project
 /vendor/
 /composer.lock
 
 # Idea files
 .idea/
+.phpstorm.meta.php
+
+# Test files
+resources/
+src/ZCode/Lighting/Demo
+.htaccess
+index.php
+framework.conf

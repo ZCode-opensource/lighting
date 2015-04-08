@@ -1,6 +1,7 @@
 <?php
 
 namespace ZCode\Lighting\Http;
+
 use ZCode\Lighting\Object\BaseObject;
 
 /**
@@ -9,27 +10,40 @@ use ZCode\Lighting\Object\BaseObject;
  */
 class ServerInfo extends BaseObject
 {
-    const BASE_URL = 1;
-    const DOC_ROOT = 2;
+    const BASE_URL      = 0;
+    const DOC_ROOT      = 1;
+    const INTERNAL_PATH = 2;
+    const RELATIVE_PATH = 3;
+    const MODULE        = 4;
 
+    private $data;
     private $relativePath;
+
+    protected function init()
+    {
+        $this->data = array();
+    }
 
     public function setRelativePath($path)
     {
         $this->relativePath = $path;
+
+        $this->data[self::BASE_URL]      = $this->getBaseUrl();
+        $this->data[self::DOC_ROOT]      = $_SERVER['DOCUMENT_ROOT'].$this->relativePath;
+        $this->data[self::RELATIVE_PATH] = $path;
     }
 
-    public function getVar($name)
+    public function setData($name, $value)
+    {
+        $this->data[$name] = $value;
+    }
+
+    public function getData($name)
     {
         $value = null;
 
-        switch ($name) {
-            case self::BASE_URL:
-                $value = $this->getBaseUrl();
-                break;
-            case self::DOC_ROOT:
-                $value = $_SERVER['DOCUMENT_ROOT'].$this->relativePath;
-                break;
+        if (isset($this->data[$name])) {
+            $value = $this->data[$name];
         }
 
         return $value;

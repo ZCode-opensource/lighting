@@ -11,37 +11,32 @@
 
 namespace ZCode\Lighting\Factory;
 
-class MainFactory extends BaseFactory
+class ModuleFactory extends BaseFactory
 {
-    const REQUEST  = 0;
-    const RESPONSE = 1;
-    const SERVER_INFO = 2;
-    const SESSION = 3;
+    const MODULE      = 0;
+
+    public $request;
+    public $session;
+    public $serverInfo;
+    public $ajax;
 
     protected function init()
     {
-        $this->logger->addDebug('Initializing MainFactory.');
-
         $this->classArray = array(
-            'Http\Request',
-            'Http\Response',
-            'Http\ServerInfo',
-            'Session\Session'
+            'Module\BaseModule'
         );
-
-        $this->logger->addDebug('MainFactory initialized.');
     }
-
-
 
     protected function createObject($type)
     {
-        $this->logger->addDebug('Creating object of type: '.$type);
         $class  = $this->getClass($type);
         $classR = new \ReflectionClass($class);
         $obj    = $classR->newInstance($this->logger);
 
-        $this->logger->addDebug('Object loaded.');
+        $obj->request    = $this->request;
+        $obj->session    = $this->session;
+        $obj->serverInfo = $this->serverInfo;
+        $obj->ajax       = $this->ajax;
 
         return $obj;
     }

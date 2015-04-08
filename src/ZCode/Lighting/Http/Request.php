@@ -3,12 +3,13 @@
 namespace ZCode\Lighting\Http;
 
 use ZCode\Lighting\Configuration\Configuration;
+use ZCode\Lighting\Object\BaseObject;
 
 /**
  * @SuppressWarnings(PHPMD.Superglobals)
  * @SuppressWarnings(PHPMD.CamelCaseVariableName)
  */
-class Request extends BaseHttp
+class Request extends BaseObject
 {
     const BOOLEAN   = 1;
     const STRING    = 2;
@@ -92,16 +93,12 @@ class Request extends BaseHttp
         return $value;
     }
 
-    public function getModule(Configuration $config)
+    public function getModule($internalPath, $path)
     {
-        $internalPath = $config->getConfig('site', 'internal_path', false);
-
-        $path = '';
         $module = $_SERVER['REQUEST_URI'];
 
         if ($internalPath) {
-            $path = $config->getConfig('site', 'relative_path', false);
-            $module = $this->strReplaceFirst($path, '', $_SERVER['REQUEST_URI']);
+            $module = $this->strReplaceFirst($path, '', $module);
         }
 
         if (substr($module, 0, 1) === '/') {

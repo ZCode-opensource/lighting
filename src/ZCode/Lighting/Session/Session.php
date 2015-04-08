@@ -19,5 +19,17 @@ use ZCode\Lighting\Object\BaseObject;
  */
 class Session extends BaseObject
 {
+    private $module;
 
+    public function cleanSession()
+    {
+        session_destroy();
+    }
+
+    public function setModule($module)
+    {
+        if (strlen($module) > 0) {
+            $this->module = $module;
+        }
+    }
 }

@@ -16,6 +16,9 @@ use ZCode\Lighting\Factory\MainFactory;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use ZCode\Lighting\Factory\ModuleFactory;
+use ZCode\Lighting\Http\Request;
+use ZCode\Lighting\Http\ServerInfo;
 
 class Application
 {
@@ -60,6 +63,32 @@ class Application
     public function render()
     {
         $this->session = $this->mainFactory->create(MainFactory::SESSION);
+        $module        = $this->request->getPostVar('module', Request::STRING);
+
+        if (!$module) {
+            $internalPath = $this->config->getConfig('site', 'internal_path', false);
+            $module       = $this->request->getModule(
+                $internalPath,
+                $this->serverInfo->getData(ServerInfo::RELATIVE_PATH)
+            );
+        }
+
+        if ($module == 'logout') {
+            $this->session->cleanSession();
+            $baseUrl = $this->serverInfo->getData(ServerInfo::BASE_URL);
+            header('Location: '.$baseUrl);
+            return;
+        }
+
+        if (!$module) {
+            $module = $this->config->getConfig('application', 'default_module', false);
+        }
+
+        $this->session->setModule($module);
+        $ajax            = $this->request->getVar('ajax', Request::BOOLEAN);
+        $moduleResponse  = $this->generateModuleResponse($module, $ajax);
+
+        $this->renderResponse($moduleResponse, $ajax);
     }
 
     private function getLogLevel()
@@ -84,5 +113,26 @@ class Application
         }
 
         return $errorVar;
+    }
+
+    private function generateModuleResponse($module, $ajax)
+    {
+        $html = '';
+
+        $moduleFactory             = new ModuleFactory($this->logger);
+        $moduleFactory->request    = $this->request;
+        $moduleFactory->serverInfo = $this->serverInfo;
+        $moduleFactory->session    = $this->session;
+        $moduleFactory->ajax       = $this->ajax;
+        $this->module              = $moduleFactory->create(ModuleFactory::MODULE);
+
+        $this->module->setModuleName($module);
+
+        return $html;
+    }
+
+    private function renderResponse($response, $ajax)
+    {
+
     }
 }

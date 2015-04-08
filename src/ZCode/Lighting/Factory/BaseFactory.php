@@ -15,13 +15,20 @@ use ZCode\Lighting\Object\BaseObject;
 
 abstract class BaseFactory extends BaseObject
 {
+    protected $classArray;
+
     abstract protected function createObject($type);
 
     public function create($type)
     {
         $obj = $this->createObject($type);
-        // $obj->setLogger($this->logger);
 
         return $obj;
+    }
+
+    protected function getClass($type)
+    {
+        $frameworkDir = '\ZCode\Lighting\\';
+        return $frameworkDir.$this->classArray[$type];
     }
 }

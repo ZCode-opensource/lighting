@@ -2,7 +2,9 @@
 
 namespace ZCode\Lighting\Http;
 
-class Response extends BaseHttp
+use ZCode\Lighting\Object\BaseObject;
+
+class Response extends BaseObject
 {
     public function generateError()
     {
