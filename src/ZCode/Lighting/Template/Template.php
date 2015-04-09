@@ -34,7 +34,8 @@ class Template extends BaseObject
             $path = $this->validatePath($path);
         }
 
-        $this->originalHtml = $this->openFile($path.'/'.$filename);
+        $this->originalHtml = $this->openFile($path.'/'.$filename.'.html');
+
         $this->html = $this->originalHtml;
     }
 
@@ -62,5 +63,41 @@ class Template extends BaseObject
         $template = fread($handle, filesize($file));
 
         return $template;
+    }
+
+    public function addSearchReplace($search, $replace)
+    {
+        if ($this->validateSearchReplace($search, $replace)) {
+            $this->search[]  = $search;
+            $this->replace[] = $replace;
+        }
+    }
+
+    private function validateSearchReplace($search, $replace)
+    {
+        $valid = true;
+
+        if (!is_string($search) || !is_string($replace) || strlen($search) == 0) {
+            // TODO: Generate error
+            $valid = true;
+        }
+
+        return $valid;
+    }
+
+    public function resetTemplate()
+    {
+        $this->search  = array();
+        $this->replace = array();
+        $this->html    = $this->originalHtml;
+    }
+
+    public function getHtml()
+    {
+        if (sizeof($this->search) > 0) {
+            $this->html = str_replace($this->search, $this->replace, $this->html);
+        }
+
+        return $this->html;
     }
 }

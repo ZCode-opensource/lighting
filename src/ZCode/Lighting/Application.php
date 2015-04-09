@@ -19,6 +19,7 @@ use Monolog\Handler\StreamHandler;
 use ZCode\Lighting\Factory\ModuleFactory;
 use ZCode\Lighting\Http\Request;
 use ZCode\Lighting\Http\ServerInfo;
+use ZCode\Lighting\Template\Template;
 
 class Application
 {
@@ -53,7 +54,7 @@ class Application
         $this->mainFactory = new MainFactory($this->logger);
 
         $this->request    = $this->mainFactory->create(MainFactory::REQUEST);
-        $this->reponse    = $this->mainFactory->create(MainFactory::RESPONSE);
+        $this->response    = $this->mainFactory->create(MainFactory::RESPONSE);
         $this->serverInfo = $this->mainFactory->create(MainFactory::SERVER_INFO);
 
         $relativePath = $this->config->getConfig('site', 'relative_path', false);
@@ -136,6 +137,13 @@ class Application
 
     private function renderResponse($response, $ajax)
     {
+        $baseUrl = $this->serverInfo->getData(ServerInfo::BASE_URL);
 
+        $tmpl = new Template($this->logger);
+        $tmpl->loadTemplate('main', 'resources/html');
+
+        $tmpl->addSearchReplace('{#BASE_URL#}', $baseUrl);
+
+        $this->response->html($tmpl->getHtml());
     }
 }

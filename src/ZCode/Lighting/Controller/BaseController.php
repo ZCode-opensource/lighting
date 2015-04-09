@@ -20,6 +20,15 @@ abstract class BaseController extends BaseObject
     public $serverInfo;
     public $session;
     public $projectNamespace;
+    public $moduleName;
+
+    abstract public function run();
+    abstract public function runAjax();
+
+    public function init()
+    {
+        $this->response = '';
+    }
 
     public function getTemplate($filename)
     {
@@ -30,11 +39,10 @@ abstract class BaseController extends BaseObject
     {
         $view = null;
 
-        $class  = $this->projectNamespace.'\Modules\\'.$this->moduleName.'\Views'.$viewName;
+        $class  = $this->projectNamespace.'\Modules\\'.$this->moduleName.'\Views\\'.$viewName;
         $rClass = new \ReflectionClass($class);
         $view   = $rClass->newInstance($this->logger);
 
         return $view;
     }
-
 }

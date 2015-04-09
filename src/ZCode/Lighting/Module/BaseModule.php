@@ -42,14 +42,23 @@ class BaseModule extends BaseObject
 
         $this->controller                   = $rClass->newInstance($this->logger);
         $this->controller->request          = $this->request;
-        $this->controller->response         = $this->getResponse;
         $this->controller->serverInfo       = $this->serverInfo;
         $this->controller->session          = $this->session;
         $this->controller->projectNamespace = $this->projectNamespace;
+        $this->controller->moduleName       = $this->moduleName;
     }
 
     public function getResponse()
     {
         $this->moduleInit();
+
+        if ($this->ajax) {
+            $this->controller->runAjax();
+            return $this->controller->response;
+        }
+
+        $this->controller->run();
+
+        return $this->controller->response;
     }
 }
