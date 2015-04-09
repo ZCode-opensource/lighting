@@ -43,6 +43,10 @@ abstract class BaseController extends BaseObject
         $rClass = new \ReflectionClass($class);
         $view   = $rClass->newInstance($this->logger);
 
+        $view->serverInfo = $this->serverInfo;
+
+        $view->setTemplateFunction(array($this, 'getTemplate'));
+
         return $view;
     }
 }

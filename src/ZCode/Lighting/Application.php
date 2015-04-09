@@ -143,6 +143,7 @@ class Application
         $tmpl->loadTemplate('main', 'resources/html');
 
         $tmpl->addSearchReplace('{#BASE_URL#}', $baseUrl);
+        $tmpl->addSearchReplace('{#MODULE#}', $response);
 
         $this->response->html($tmpl->getHtml());
     }
