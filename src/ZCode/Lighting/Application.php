@@ -85,6 +85,9 @@ class Application
             $module = $this->config->getConfig('application', 'default_module', false);
         }
 
+        // convert first letter to uppercase
+        $module = ucwords($module);
+
         $this->session->setModule($module);
         $ajax            = $this->request->getVar('ajax', Request::BOOLEAN);
         $moduleResponse  = $this->generateModuleResponse($module, $ajax);
@@ -118,8 +121,6 @@ class Application
 
     private function generateModuleResponse($module, $ajax)
     {
-        $response = '';
-
         $moduleFactory             = new ModuleFactory($this->logger);
         $moduleFactory->request    = $this->request;
         $moduleFactory->serverInfo = $this->serverInfo;
@@ -142,8 +143,8 @@ class Application
         $tmpl = new Template($this->logger);
         $tmpl->loadTemplate('main', 'resources/html');
 
-        $tmpl->addSearchReplace('{#BASE_URL#}', $baseUrl);
         $tmpl->addSearchReplace('{#MODULE#}', $response);
+        $tmpl->addSearchReplace('{#BASE_URL#}', $baseUrl);
 
         $this->response->html($tmpl->getHtml());
     }

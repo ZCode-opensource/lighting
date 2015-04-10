@@ -12,6 +12,7 @@
 namespace ZCode\Lighting\Controller;
 
 use ZCode\Lighting\Object\BaseObject;
+use ZCode\Lighting\Template\Template;
 
 abstract class BaseController extends BaseObject
 {
@@ -32,7 +33,11 @@ abstract class BaseController extends BaseObject
 
     public function getTemplate($filename)
     {
+        $path = 'src/'.str_replace('\\', '/', $this->projectNamespace).'/Modules/'.$this->moduleName.'/resources/html/';
+        $tmpl = new Template($this->logger);
+        $tmpl->loadTemplate($filename, $path);
 
+        return $tmpl;
     }
 
     protected function createView($viewName)

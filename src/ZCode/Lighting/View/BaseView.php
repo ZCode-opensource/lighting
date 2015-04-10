@@ -36,7 +36,7 @@ class BaseView extends BaseObject
 
     protected function loadTemplate($filename)
     {
-        $tmpl = call_user_func($this->templateFunction, array($filename));
+        $tmpl = call_user_func($this->templateFunction, $filename);
 
         return $tmpl;
     }
