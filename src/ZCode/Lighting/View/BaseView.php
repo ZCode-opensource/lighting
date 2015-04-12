@@ -29,9 +29,19 @@ class BaseView extends BaseObject
         $this->addCssFunction = $function;
     }
 
+    protected function addCss($file)
+    {
+        call_user_func_array($this->addCssFunction, array($file));
+    }
+
     public function setAddJsFunction($function)
     {
         $this->addJsFunction = $function;
+    }
+
+    protected function addJs($file)
+    {
+        call_user_func_array($this->addJsFunction, array($file));
     }
 
     protected function loadTemplate($filename)

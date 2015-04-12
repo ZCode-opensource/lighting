@@ -82,7 +82,7 @@ class MysqlProvider extends DatabaseProvider
     public function loadObjectList()
     {
         $objects = array();
-        var_dump($this->query);
+
         if ($result = $this->mysqli->query($this->query)) {
             $this->numRows = $result->num_rows;
 

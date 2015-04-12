@@ -21,8 +21,11 @@ abstract class BaseController extends BaseObject
     public $serverInfo;
     public $session;
     public $projectNamespace;
+    public $resourcePath;
     public $moduleName;
     public $databases;
+    public $cssList;
+    public $jsList;
 
     abstract public function run();
     abstract public function runAjax();
@@ -34,9 +37,8 @@ abstract class BaseController extends BaseObject
 
     public function getTemplate($filename)
     {
-        $path = 'src/'.str_replace('\\', '/', $this->projectNamespace).'/Modules/'.$this->moduleName.'/resources/html/';
         $tmpl = new Template($this->logger);
-        $tmpl->loadTemplate($filename, $path);
+        $tmpl->loadTemplate($filename, $this->resourcePath.'html/');
 
         return $tmpl;
     }
@@ -52,8 +54,24 @@ abstract class BaseController extends BaseObject
         $view->serverInfo = $this->serverInfo;
 
         $view->setTemplateFunction(array($this, 'getTemplate'));
+        $view->setAddCssFunction(array($this, 'addCss'));
+        $view->setAddJsFunction(array($this, 'addJs'));
 
         return $view;
+    }
+
+    public function addCss($file)
+    {
+        if (strlen($file) > 0) {
+            $this->cssList[] = $file;
+        }
+    }
+
+    public function addJs($file)
+    {
+        if (strlen($file) > 0) {
+            $this->jsList[] = $file;
+        }
     }
 
     protected function createModel($modelName)

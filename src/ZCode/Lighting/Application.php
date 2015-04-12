@@ -32,6 +32,7 @@ class Application
     private $serverInfo;
     private $logger;
     private $session;
+    private $module;
 
     public function __construct()
     {
@@ -163,10 +164,10 @@ class Application
         $moduleFactory->ajax       = $ajax;
 
         $moduleFactory->projectNamespace = $this->config->getConfig('application', 'project_namespace', false);
-        $mainModule = $moduleFactory->create(ModuleFactory::MODULE);
+        $this->module = $moduleFactory->create(ModuleFactory::MODULE);
 
-        $mainModule->setModuleName($module);
-        $response = $mainModule->getResponse();
+        $this->module->setModuleName($module);
+        $response = $this->module->getResponse();
 
         return $response;
     }
@@ -181,6 +182,40 @@ class Application
         $tmpl->addSearchReplace('{#MODULE#}', $response);
         $tmpl->addSearchReplace('{#BASE_URL#}', $baseUrl);
 
+        $cssString = $this->processModuleCss($this->module->moduleCssList);
+        $tmpl->addSearchReplace('{#CSS#}', $cssString);
+
+        $jsString = $this->processModuleJs($this->module->moduleJsList);
+        $tmpl->addSearchReplace('{#JS#}', $jsString);
+
         $this->response->html($tmpl->getHtml());
+    }
+
+    private function processModuleCss(array $moduleCssList)
+    {
+        $cssString = '';
+        $numCss    = sizeof($moduleCssList);
+
+        if ($numCss > 0) {
+            for ($i = 0; $i < $numCss; $i++) {
+                $cssString .= '<link rel="stylesheet" href="'.$moduleCssList[$i].'" />';
+            }
+        }
+
+        return $cssString;
+    }
+
+    private function processModuleJs(array $moduleJsList)
+    {
+        $jsString = '';
+        $numJs    = sizeof($moduleJsList);
+
+        if ($numJs > 0) {
+            for ($i = 0; $i < $numJs; $i++) {
+                $jsString .= '<script src="'.$moduleJsList[$i].'"></script>';
+            }
+        }
+
+        return $jsString;
     }
 }
