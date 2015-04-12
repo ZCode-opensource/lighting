@@ -12,3 +12,4 @@ src/ZCode/Lighting/Demo
 .htaccess
 index.php
 framework.conf
+app.log
