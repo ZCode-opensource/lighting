@@ -20,29 +20,11 @@ class MainFactory extends BaseFactory
 
     protected function init()
     {
-        $this->logger->addDebug('Initializing MainFactory.');
-
         $this->classArray = array(
             'Http\Request',
             'Http\Response',
             'Http\ServerInfo',
             'Session\Session'
         );
-
-        $this->logger->addDebug('MainFactory initialized.');
-    }
-
-
-
-    protected function createObject($type)
-    {
-        $this->logger->addDebug('Creating object of type: '.$type);
-        $class  = $this->getClass($type);
-        $classR = new \ReflectionClass($class);
-        $obj    = $classR->newInstance($this->logger);
-
-        $this->logger->addDebug('Object loaded.');
-
-        return $obj;
     }
 }

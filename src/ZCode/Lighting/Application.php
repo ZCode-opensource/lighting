@@ -12,6 +12,7 @@
 namespace ZCode\Lighting;
 
 use ZCode\Lighting\Configuration\Configuration;
+use ZCode\Lighting\Factory\DatabaseFactory;
 use ZCode\Lighting\Factory\MainFactory;
 
 use Monolog\Logger;
@@ -54,7 +55,7 @@ class Application
         $this->mainFactory = new MainFactory($this->logger);
 
         $this->request    = $this->mainFactory->create(MainFactory::REQUEST);
-        $this->response    = $this->mainFactory->create(MainFactory::RESPONSE);
+        $this->response   = $this->mainFactory->create(MainFactory::RESPONSE);
         $this->serverInfo = $this->mainFactory->create(MainFactory::SERVER_INFO);
 
         $relativePath = $this->config->getConfig('site', 'relative_path', false);
@@ -121,7 +122,41 @@ class Application
 
     private function generateModuleResponse($module, $ajax)
     {
+        // create the databases if needed
+        $useDatabase = $this->config->getConfig('database', 'use_database', true);
+        $databases   = array();
+
+        if ($useDatabase) {
+            $databaseFactory = new DatabaseFactory($this->logger);
+            $databaseCount   = intval($this->config->getConfig('database', 'number_databases', false));
+
+            for ($i = 0; $i < $databaseCount; $i++) {
+                $dbSection  = 'database_'.($i + 1);
+                $dbConfType = $this->config->getConfig($dbSection, 'database_type', false);
+
+                switch ($dbConfType) {
+                    case 'mysql':
+                        $dbType = DatabaseFactory::MYSQL;
+                        break;
+                    default:
+                        $dbType = null;
+                        break;
+                }
+
+                if ($dbType !== null) {
+                    $connectionName            = $this->config->getConfig($dbSection, 'name', false);
+                    $databaseFactory->server   = $this->config->getConfig($dbSection, 'server', false);
+                    $databaseFactory->user     = $this->config->getConfig($dbSection, 'user', false);
+                    $databaseFactory->password = $this->config->getConfig($dbSection, 'password', false);
+                    $databaseFactory->database = $this->config->getConfig($dbSection, 'database', false);
+
+                    $databases[$connectionName] = $databaseFactory->create($dbType);
+                }
+            }
+        }
+
         $moduleFactory             = new ModuleFactory($this->logger);
+        $moduleFactory->databases  = $databases;
         $moduleFactory->request    = $this->request;
         $moduleFactory->serverInfo = $this->serverInfo;
         $moduleFactory->session    = $this->session;

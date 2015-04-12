@@ -20,6 +20,7 @@ class ModuleFactory extends BaseFactory
     public $serverInfo;
     public $ajax;
     public $projectNamespace;
+    public $databases;
 
     protected function init()
     {
@@ -28,18 +29,15 @@ class ModuleFactory extends BaseFactory
         );
     }
 
-    protected function createObject($type)
+    protected function additionalSetup($object)
     {
-        $class  = $this->getClass($type);
-        $classR = new \ReflectionClass($class);
-        $obj    = $classR->newInstance($this->logger);
+        $object->request          = $this->request;
+        $object->session          = $this->session;
+        $object->serverInfo       = $this->serverInfo;
+        $object->ajax             = $this->ajax;
+        $object->projectNamespace = $this->projectNamespace;
+        $object->databases        = $this->databases;
 
-        $obj->request          = $this->request;
-        $obj->session          = $this->session;
-        $obj->serverInfo       = $this->serverInfo;
-        $obj->ajax             = $this->ajax;
-        $obj->projectNamespace = $this->projectNamespace;
-
-        return $obj;
+        return $object;
     }
 }

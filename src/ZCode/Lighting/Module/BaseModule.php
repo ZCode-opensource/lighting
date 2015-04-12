@@ -16,6 +16,7 @@ use ZCode\Lighting\Object\BaseObject;
 class BaseModule extends BaseObject
 {
     public $moduleName;
+    public $databases;
     public $request;
     public $session;
     public $serverInfo;
@@ -41,6 +42,7 @@ class BaseModule extends BaseObject
         }
 
         $this->controller                   = $rClass->newInstance($this->logger);
+        $this->controller->databases        = $this->databases;
         $this->controller->request          = $this->request;
         $this->controller->serverInfo       = $this->serverInfo;
         $this->controller->session          = $this->session;

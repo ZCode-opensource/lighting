@@ -17,8 +17,6 @@ abstract class BaseFactory extends BaseObject
 {
     protected $classArray;
 
-    abstract protected function createObject($type);
-
     public function create($type)
     {
         $obj = $this->createObject($type);
@@ -30,5 +28,20 @@ abstract class BaseFactory extends BaseObject
     {
         $frameworkDir = '\ZCode\Lighting\\';
         return $frameworkDir.$this->classArray[$type];
+    }
+
+    protected function createObject($type)
+    {
+        $class  = $this->getClass($type);
+        $classR = new \ReflectionClass($class);
+        $object = $classR->newInstance($this->logger);
+        $object = $this->additionalSetup($object);
+
+        return $object;
+    }
+
+    protected function additionalSetup($object)
+    {
+        return $object;
     }
 }

@@ -37,7 +37,6 @@ class Configuration
 
     public function getConfig($section, $field, $boolean)
     {
-        $data = false;
         $this->section = $section;
         $this->field   = $field;
 
@@ -52,8 +51,6 @@ class Configuration
 
     private function getText()
     {
-        $text = '';
-
         $text = $this->data[$this->section][$this->field];
 
         return $text;

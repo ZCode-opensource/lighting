@@ -22,6 +22,7 @@ abstract class BaseController extends BaseObject
     public $session;
     public $projectNamespace;
     public $moduleName;
+    public $databases;
 
     abstract public function run();
     abstract public function runAjax();
@@ -53,5 +54,18 @@ abstract class BaseController extends BaseObject
         $view->setTemplateFunction(array($this, 'getTemplate'));
 
         return $view;
+    }
+
+    protected function createModel($modelName)
+    {
+        $model = null;
+
+        $class  = $this->projectNamespace.'\Modules\\'.$this->moduleName.'\Models\\'.$modelName;
+        $rClass = new \ReflectionClass($class);
+        $model  = $rClass->newInstance($this->logger);
+
+        $model->setDatabases($this->databases);
+
+        return $model;
     }
 }
