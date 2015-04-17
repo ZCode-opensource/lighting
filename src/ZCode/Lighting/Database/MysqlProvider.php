@@ -22,7 +22,9 @@ class MysqlProvider extends DatabaseProvider
 
     protected function disconnect()
     {
-        $this->mysqli->close();
+        if ($this->mysqli) {
+            $this->mysqli->close();
+        }
     }
 
     public function setQuery($query)
