@@ -174,6 +174,11 @@ class Application
 
     private function renderResponse($response, $ajax)
     {
+        if ($ajax) {
+            $this->response->html($response);
+            return;
+        }
+
         $baseUrl = $this->serverInfo->getData(ServerInfo::BASE_URL);
 
         $tmpl = new Template($this->logger);
