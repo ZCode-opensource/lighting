@@ -100,10 +100,10 @@ class BaseModule extends BaseObject
         $this->moduleCssList[] = $css;
     }
 
-    private function processJs($ControllerJsList, $numJs)
+    private function processJs($controllerJsList, $numJs)
     {
         for ($i = 0; $i < $numJs; $i++) {
-            $this->addJs($ControllerJsList[$i]);
+            $this->addJs($controllerJsList[$i]);
         }
     }
 

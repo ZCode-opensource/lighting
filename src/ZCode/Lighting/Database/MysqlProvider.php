@@ -118,7 +118,7 @@ class MysqlProvider extends DatabaseProvider
                 if ($value) {
                     $fields    .= $key.',';
                     $positions .= '?,';
-                    $params[]   = &$datos[$key];
+                    $params[]   = &$data[$key];
                 }
             }
 
@@ -152,6 +152,7 @@ class MysqlProvider extends DatabaseProvider
     public function updateRow($table, $data, $types, $keys)
     {
         $keyArray = false;
+        $numKeys  = 0;
 
         if (isset($keys[0]) && is_array($keys[0])) {
             $keyArray = true;
@@ -159,7 +160,6 @@ class MysqlProvider extends DatabaseProvider
 
         $updateFields = '';
         $params       = array($types);
-
 
         if ($keyArray) {
             $numKeys = sizeof($keys);
