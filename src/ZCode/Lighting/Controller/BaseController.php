@@ -86,4 +86,18 @@ abstract class BaseController extends BaseObject
 
         return $model;
     }
+
+    protected function generateJsonResponse($success, $message, $data)
+    {
+        $jsonArray = array('success' => $success, 'message' => $message);
+
+        if ($data && is_array($data)) {
+            foreach ($data as $key => $value) {
+                $jsonArray[$key] = $value;
+            }
+        }
+
+        $json = json_encode($jsonArray, JSON_UNESCAPED_UNICODE);
+        $this->response = $json;
+    }
 }
