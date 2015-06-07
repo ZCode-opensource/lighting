@@ -19,17 +19,51 @@ use ZCode\Lighting\Object\BaseObject;
  */
 class Session extends BaseObject
 {
-    private $module;
+    private $name;
 
     public function cleanSession()
     {
         session_destroy();
     }
 
-    public function setModule($module)
+    public function setVar($name, $value)
     {
-        if (strlen($module) > 0) {
-            $this->module = $module;
+        if (strlen($name) > 0 && strlen($value) > 0) {
+            $_SESSION[$name] = $value;
         }
+    }
+
+    public function getVar($name, $boolean)
+    {
+        $this->name = $name;
+
+        if ($boolean) {
+            $data = $this->getBoolean();
+            return $data;
+        }
+
+        if  (isset($_SESSION[$name])) {
+            $data = $_SESSION[$name];
+            return $data;
+        }
+
+        return null;
+    }
+
+    private function getBoolean()
+    {
+        $boolean = false;
+
+        if (isset($_SESSION[$this->name])) {
+            $tmp     = intval($_SESSION[$this->name]);
+
+            if ($tmp == 1) {
+                $boolean = true;
+            }
+
+            return $boolean;
+        }
+
+        return false;
     }
 }

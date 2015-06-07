@@ -87,14 +87,53 @@ class Application
             $module = $this->config->getConfig('application', 'default_module', false);
         }
 
+        // Auth section
+        $loginModule = $this->config->getConfig('auth', 'login_module', false);
+        if ($this->validateAuth($module)) {
+            $module = $loginModule;
+        }
+
         // convert first letter to uppercase
         $module = ucwords($module);
 
-        $this->session->setModule($module);
+        $this->session->setVar('module', $module);
         $ajax            = $this->request->getVar('ajax', Request::BOOLEAN);
         $moduleResponse  = $this->generateModuleResponse($module, $ajax);
 
         $this->renderResponse($moduleResponse, $ajax);
+    }
+
+    private function validateAuth($module)
+    {
+        $requireAuth = $this->config->getConfig('application', 'auth', true);
+
+        if (!$requireAuth) {
+            return false;
+        }
+
+        $userAuth    = $this->session->getVar('auth', true);
+        $authModules = $this->config->getConfig('auth', 'modules', false);
+
+        if ($authModules === '*') {
+            if (!$userAuth) {
+                return true;
+            }
+        }
+
+        $modules = explode(',', $authModules);
+        $numModules = sizeof($modules);
+
+        if ($numModules > 0) {
+            for ($i = 0; $i < $numModules; $i++) {
+                if (strtolower($modules[$i]) === strtolower($module)) {
+                    if (!$userAuth) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     private function getLogLevel()
