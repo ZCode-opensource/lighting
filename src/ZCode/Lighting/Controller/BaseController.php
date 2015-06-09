@@ -64,6 +64,38 @@ abstract class BaseController extends BaseObject
         return $view;
     }
 
+    protected function createModel($modelName)
+    {
+        $model = null;
+
+        $class  = $this->projectNamespace.'\Modules\\'.$this->moduleName.'\Models\\'.$modelName;
+        $rClass = new \ReflectionClass($class);
+        $model  = $rClass->newInstance($this->logger);
+
+        $model->setDatabases($this->databases);
+
+        return $model;
+    }
+
+    protected function createController($controllerName)
+    {
+        $controller = null;
+
+        $class       = $this->projectNamespace.'\Modules\\'.$this->moduleName.'\Controllers\\'.$controllerName;
+        $rClass      = new \ReflectionClass($class);
+        $controller  = $rClass->newInstance($this->logger);
+
+        $controller->databases        = $this->databases;
+        $controller->request          = $this->request;
+        $controller->serverInfo       = $this->serverInfo;
+        $controller->session          = $this->session;
+        $controller->projectNamespace = $this->projectNamespace;
+        $controller->resourcePath     = $this->resourcePath;
+        $controller->moduleName       = $this->moduleName;
+
+        return $controller;
+    }
+
     public function addCss($file)
     {
         if (strlen($file) > 0) {
@@ -90,19 +122,6 @@ abstract class BaseController extends BaseObject
         if (strlen($file) > 0) {
             $this->globalJsList[] = $file;
         }
-    }
-
-    protected function createModel($modelName)
-    {
-        $model = null;
-
-        $class  = $this->projectNamespace.'\Modules\\'.$this->moduleName.'\Models\\'.$modelName;
-        $rClass = new \ReflectionClass($class);
-        $model  = $rClass->newInstance($this->logger);
-
-        $model->setDatabases($this->databases);
-
-        return $model;
     }
 
     protected function generateJsonResponse($success, $message, $data)
