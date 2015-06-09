@@ -33,6 +33,7 @@ class Application
     private $logger;
     private $session;
     private $module;
+    private $menuModule;
 
     public function __construct()
     {
@@ -204,9 +205,17 @@ class Application
 
         $moduleFactory->projectNamespace = $this->config->getConfig('application', 'project_namespace', false);
         $this->module = $moduleFactory->create(ModuleFactory::MODULE);
-
         $this->module->setModuleName($module);
         $response = $this->module->getResponse();
+
+        // Generate de menu module if exists
+        $generateMenu = $this->config->getConfig('menu', 'generate_menu', true);
+
+        if ($generateMenu) {
+            $menuModule = $this->config->getConfig('menu', 'menu_module', false);
+            $this->menuModule = $moduleFactory->create(ModuleFactory::MODULE);
+            $this->menuModule->setModuleName($menuModule);
+        }
 
         return $response;
     }
@@ -225,6 +234,15 @@ class Application
 
         $pageTitle = $this->config->getConfig('site', 'page_title', false);
         $tmpl->addSearchReplace('{#PAGE_TITLE#}', $pageTitle);
+
+        // Generate Menu
+        $menu = '';
+
+        if ($this->menuModule) {
+            $menu = $this->menuModule->getResponse();
+        }
+
+        $tmpl->addSearchReplace('{#MENU#}', $menu);
 
         $tmpl->addSearchReplace('{#MODULE#}', $response);
         $tmpl->addSearchReplace('{#BASE_URL#}', $baseUrl);
