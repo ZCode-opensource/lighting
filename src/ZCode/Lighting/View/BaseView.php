@@ -17,7 +17,9 @@ class BaseView extends BaseObject
 {
     private $templateFunction;
     private $addCssFunction;
+    private $addGlobalCssFunction;
     private $addJsFunction;
+    private $addGlobalJsFunction;
 
     public function setTemplateFunction($function)
     {
@@ -34,6 +36,16 @@ class BaseView extends BaseObject
         call_user_func_array($this->addCssFunction, array($file));
     }
 
+    public function setAddGlobalCssFunction($function)
+    {
+        $this->addGlobalCssFunction = $function;
+    }
+
+    protected function addGlobalCss($file)
+    {
+        call_user_func_array($this->addGlobalCssFunction, array($file));
+    }
+
     public function setAddJsFunction($function)
     {
         $this->addJsFunction = $function;
@@ -42,6 +54,16 @@ class BaseView extends BaseObject
     protected function addJs($file)
     {
         call_user_func_array($this->addJsFunction, array($file));
+    }
+
+    public function setAddGlobalJsFunction($function)
+    {
+        $this->addGlobalJsFunction = $function;
+    }
+
+    protected function addGlobalJs($file)
+    {
+        call_user_func_array($this->addGlobalJsFunction, array($file));
     }
 
     protected function loadTemplate($filename)

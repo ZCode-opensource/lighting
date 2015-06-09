@@ -25,7 +25,9 @@ abstract class BaseController extends BaseObject
     public $moduleName;
     public $databases;
     public $cssList;
+    public $globalCssList;
     public $jsList;
+    public $globalJsList;
 
     abstract public function run();
     abstract public function runAjax();
@@ -55,7 +57,9 @@ abstract class BaseController extends BaseObject
 
         $view->setTemplateFunction(array($this, 'getTemplate'));
         $view->setAddCssFunction(array($this, 'addCss'));
+        $view->setAddGlobalCssFunction(array($this, 'addGlobalCss'));
         $view->setAddJsFunction(array($this, 'addJs'));
+        $view->setAddGlobalJsFunction(array($this, 'addGlobalJs'));
 
         return $view;
     }
@@ -67,10 +71,24 @@ abstract class BaseController extends BaseObject
         }
     }
 
+    public function addGlobalCss($file)
+    {
+        if (strlen($file) > 0) {
+            $this->globalCssList[] = $file;
+         }
+    }
+
     public function addJs($file)
     {
         if (strlen($file) > 0) {
             $this->jsList[] = $file;
+        }
+    }
+
+    public function addGlobalJs($file)
+    {
+        if (strlen($file) > 0) {
+            $this->globalJsList[] = $file;
         }
     }
 

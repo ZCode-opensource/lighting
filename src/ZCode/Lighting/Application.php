@@ -223,6 +223,9 @@ class Application
         $tmpl = new Template($this->logger);
         $tmpl->loadTemplate('main', 'resources/html');
 
+        $pageTitle = $this->config->getConfig('site', 'page_title', false);
+        $tmpl->addSearchReplace('{#PAGE_TITLE#}', $pageTitle);
+
         $tmpl->addSearchReplace('{#MODULE#}', $response);
         $tmpl->addSearchReplace('{#BASE_URL#}', $baseUrl);
 

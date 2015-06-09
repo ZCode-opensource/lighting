@@ -11,6 +11,7 @@
 
 namespace ZCode\Lighting\Module;
 
+use ZCode\Lighting\Http\ServerInfo;
 use ZCode\Lighting\Object\BaseObject;
 
 class BaseModule extends BaseObject
@@ -57,8 +58,6 @@ class BaseModule extends BaseObject
         $this->controller->projectNamespace = $this->projectNamespace;
         $this->controller->resourcePath     = $this->resourcePath;
         $this->controller->moduleName       = $this->moduleName;
-
-
     }
 
     public function getResponse()
@@ -72,44 +71,62 @@ class BaseModule extends BaseObject
 
         $this->controller->run();
 
-        // process the css
-        $numCss = sizeof($this->controller->cssList);
+        // process the global css files
+        $numCss = sizeof($this->controller->globalCssList);
         if ($numCss > 0) {
-            $this->processCss($this->controller->cssList, $numCss);
+            for ($i = 0; $i < $numCss; $i++) {
+                $this->addCss($this->controller->globalCssList[$i], true);
+            }
         }
 
-        // process the js
+        // process the module css files
+        $numCss = sizeof($this->controller->cssList);
+        if ($numCss > 0) {
+            for ($i = 0; $i < $numCss; $i++) {
+                $this->addCss($this->controller->cssList[$i], false);
+            }
+        }
+
+        // process the global js files
+        $numJs = sizeof($this->controller->globalJsList);
+        if ($numJs > 0) {
+            for ($i = 0; $i < $numJs; $i++) {
+                $this->addJs($this->controller->globalJsList[$i], true);
+            }
+        }
+
+        // process the module js files
         $numJs = sizeof($this->controller->jsList);
         if ($numJs > 0) {
-            $this->processJs($this->controller->jsList, $numJs);
+            for ($i = 0; $i < $numJs; $i++) {
+                $this->addJs($this->controller->jsList[$i], false);
+            }
         }
 
         return $this->controller->response;
     }
 
-    private function processCss($controllerCssList, $numCss)
+    private function addCss($filename, $global)
     {
-        for ($i = 0; $i < $numCss; $i++) {
-            $this->addCss($controllerCssList[$i]);
-        }
-    }
+        $base = $this->serverInfo->getData(ServerInfo::BASE_URL).$this->resourcePath.'css/';
 
-    private function addCss($filename)
-    {
-        $css = $this->resourcePath.'css/'.$filename.'.css';
+        if ($global) {
+            $base = $this->serverInfo->getData(ServerInfo::BASE_URL).'resources/css/';
+        }
+
+        $css = $base.$filename.'.css';
         $this->moduleCssList[] = $css;
     }
 
-    private function processJs($controllerJsList, $numJs)
+    private function addJs($filename, $global)
     {
-        for ($i = 0; $i < $numJs; $i++) {
-            $this->addJs($controllerJsList[$i]);
-        }
-    }
+        $base = $this->serverInfo->getData(ServerInfo::BASE_URL).$this->resourcePath.'js/';
 
-    private function addJs($filename)
-    {
-        $jsc = $this->resourcePath.'js/'.$filename.'.js';
+        if ($global) {
+            $base = $this->serverInfo->getData(ServerInfo::BASE_URL).'resources/js/';
+        }
+
+        $jsc = $base.$filename.'.js';
         $this->moduleJsList[] = $jsc;
     }
 }
