@@ -33,6 +33,8 @@ class Application
     private $logger;
     private $session;
     private $module;
+    private $menuModule;
+    private $footerModule;
 
     public function __construct()
     {
@@ -96,7 +98,7 @@ class Application
         // convert first letter to uppercase
         $module = ucwords($module);
 
-        $this->session->setVar('module', $module);
+        $this->serverInfo->setData(ServerInfo::MODULE, $module);
         $ajax            = $this->request->getVar('ajax', Request::BOOLEAN);
         $moduleResponse  = $this->generateModuleResponse($module, $ajax);
 
@@ -204,9 +206,26 @@ class Application
 
         $moduleFactory->projectNamespace = $this->config->getConfig('application', 'project_namespace', false);
         $this->module = $moduleFactory->create(ModuleFactory::MODULE);
-
         $this->module->setModuleName($module);
         $response = $this->module->getResponse();
+
+        // Generate menu module if needed
+        $generateMenu = $this->config->getConfig('menu', 'generate_menu', true);
+
+        if ($generateMenu) {
+            $menuModule = $this->config->getConfig('menu', 'menu_module', false);
+            $this->menuModule = $moduleFactory->create(ModuleFactory::MODULE);
+            $this->menuModule->setModuleName($menuModule);
+        }
+
+        // Generate footer module if needed
+        $genrateFooter = $this->config->getConfig('footer', 'footer_module', false);
+
+        if ($genrateFooter) {
+            $footerModule = $this->config->getConfig('footer', 'footer_module', false);
+            $this->footerModule = $moduleFactory->create(ModuleFactory::MODULE);
+            $this->footerModule->setModuleName($footerModule);
+        }
 
         return $response;
     }
@@ -225,6 +244,24 @@ class Application
 
         $pageTitle = $this->config->getConfig('site', 'page_title', false);
         $tmpl->addSearchReplace('{#PAGE_TITLE#}', $pageTitle);
+
+        // Generate Menu
+        $menu = '';
+
+        if ($this->menuModule) {
+            $menu = $this->menuModule->getResponse();
+        }
+
+        $tmpl->addSearchReplace('{#MENU#}', $menu);
+
+        // Generate Footer
+        $footer = '';
+
+        if ($this->footerModule) {
+            $footer = $this->footerModule->getResponse();
+        }
+
+        $tmpl->addSearchReplace('{#FOOTER#}', $footer);
 
         $tmpl->addSearchReplace('{#MODULE#}', $response);
         $tmpl->addSearchReplace('{#BASE_URL#}', $baseUrl);
