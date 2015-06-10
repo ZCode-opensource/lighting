@@ -214,7 +214,7 @@ class Application
     private function renderResponse($response, $ajax)
     {
         if ($ajax) {
-            $this->response->html($response);
+            $this->response->json($response);
             return;
         }
 

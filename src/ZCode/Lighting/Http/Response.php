@@ -13,14 +13,14 @@ class Response extends BaseObject
 
     public function html($html)
     {
-        // TODO: Generate corresponding header
+        header("Content-Type:text/html");
         http_response_code(200);
         echo $html;
     }
 
     public function json($json)
     {
-        // TODO: Generate corresponding header
+        header("Content-Type:application/json");
         http_response_code(200);
         echo $json;
     }
