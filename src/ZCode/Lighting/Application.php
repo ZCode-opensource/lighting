@@ -98,7 +98,7 @@ class Application
         // convert first letter to uppercase
         $module = ucwords($module);
 
-        $this->session->setVar('module', $module);
+        $this->serverInfo->setData(ServerInfo::MODULE, $module);
         $ajax            = $this->request->getVar('ajax', Request::BOOLEAN);
         $moduleResponse  = $this->generateModuleResponse($module, $ajax);
 
