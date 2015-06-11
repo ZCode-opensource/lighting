@@ -19,9 +19,9 @@ abstract class DatabaseProvider extends BaseObject
     public $user;
     public $password;
     public $database;
+    public $lastId;
 
     protected $query;
-    protected $lastId;
     protected $numRows;
 
     abstract public function connect();
