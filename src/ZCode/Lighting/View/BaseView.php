@@ -72,4 +72,27 @@ class BaseView extends BaseObject
 
         return $tmpl;
     }
+
+    protected function generateSelectOptions($items, $itemId) {
+        $options = '';
+
+
+        if ($items) {
+            $numItems = sizeof($items);
+
+            for ($i = 0; $i < $numItems; $i++) {
+                $selected = '';
+
+                if ($itemId != null && $itemId === $items[$i]->item_id) {
+                    $selected = 'selected="selected';
+                }
+
+                $options .= '<option value="'.$items[$i]->item_id.'" '.$selected.'>';
+                $options .= $items[$i]->name;
+                $options .= '</option>';
+            }
+        }
+
+        return $options;
+    }
 }
