@@ -75,6 +75,7 @@ class Request extends BaseObject
                 }
                 break;
             case self::INTEGER:
+                $value = intval($value);
                 if (is_int($value)) {
                     $validated = true;
                 }
