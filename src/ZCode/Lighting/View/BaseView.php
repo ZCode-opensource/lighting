@@ -84,7 +84,7 @@ class BaseView extends BaseObject
                 $selected = '';
 
                 if ($itemId != null && $itemId === $items[$i]->item_id) {
-                    $selected = 'selected="selected';
+                    $selected = 'selected="selected"';
                 }
 
                 $options .= '<option value="'.$items[$i]->item_id.'" '.$selected.'>';
