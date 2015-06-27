@@ -15,38 +15,18 @@ use ZCode\Lighting\Object\BaseObject;
 
 class BaseView extends BaseObject
 {
-    private $templateFunction;
-    private $globalTemplateFunction;
-    private $addCssFunction;
-    private $addGlobalCssFunction;
-    private $addJsFunction;
-    private $addGlobalJsFunction;
+    public $templateFunction;
+    public $globalTemplateFunction;
+    public $addCssFunction;
+    public $addGlobalCssFunction;
+    public $addJsFunction;
+    public $addGlobalJsFunction;
 
     public $serverInfo;
-
-    public function setTemplateFunction($function)
-    {
-        $this->templateFunction = $function;
-    }
-
-    public function setGlobalTemplateFunction($function)
-    {
-        $this->globalTemplateFunction = $function;
-    }
-
-    public function setAddCssFunction($function)
-    {
-        $this->addCssFunction = $function;
-    }
 
     protected function addCss($file)
     {
         call_user_func_array($this->addCssFunction, array($file));
-    }
-
-    public function setAddGlobalCssFunction($function)
-    {
-        $this->addGlobalCssFunction = $function;
     }
 
     protected function addGlobalCss($file)
@@ -54,19 +34,9 @@ class BaseView extends BaseObject
         call_user_func_array($this->addGlobalCssFunction, array($file));
     }
 
-    public function setAddJsFunction($function)
-    {
-        $this->addJsFunction = $function;
-    }
-
     protected function addJs($file)
     {
         call_user_func_array($this->addJsFunction, array($file));
-    }
-
-    public function setAddGlobalJsFunction($function)
-    {
-        $this->addGlobalJsFunction = $function;
     }
 
     protected function addGlobalJs($file)

@@ -65,12 +65,12 @@ abstract class BaseController extends BaseObject
 
         $view->serverInfo = $this->serverInfo;
 
-        $view->setTemplateFunction(array($this, 'getTemplate'));
-        $view->setGlobalTemplateFunction(array($this, 'getGlobalTemplate'));
-        $view->setAddCssFunction(array($this, 'addCss'));
-        $view->setAddGlobalCssFunction(array($this, 'addGlobalCss'));
-        $view->setAddJsFunction(array($this, 'addJs'));
-        $view->setAddGlobalJsFunction(array($this, 'addGlobalJs'));
+        $view->templateFunction = array($this, 'getTemplate');
+        $view->globalTemplateFunction = array($this, 'getGlobalTemplate');
+        $view->addCssFunction = array($this, 'addCss');
+        $view->addGlobalCssFunction = array($this, 'addGlobalCss');
+        $view->addJsFunction = array($this, 'addJs');
+        $view->addGlobalJsFunction = array($this, 'addGlobalJs');
 
         return $view;
     }
