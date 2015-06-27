@@ -16,14 +16,22 @@ use ZCode\Lighting\Object\BaseObject;
 class BaseView extends BaseObject
 {
     private $templateFunction;
+    private $globalTemplateFunction;
     private $addCssFunction;
     private $addGlobalCssFunction;
     private $addJsFunction;
     private $addGlobalJsFunction;
 
+    public $serverInfo;
+
     public function setTemplateFunction($function)
     {
         $this->templateFunction = $function;
+    }
+
+    public function setGlobalTemplateFunction($function)
+    {
+        $this->globalTemplateFunction = $function;
     }
 
     public function setAddCssFunction($function)
@@ -69,6 +77,13 @@ class BaseView extends BaseObject
     protected function loadTemplate($filename)
     {
         $tmpl = call_user_func($this->templateFunction, $filename);
+
+        return $tmpl;
+    }
+
+    protected function loadGlobalTemplate($filename, $path)
+    {
+        $tmpl = call_user_func($this->globalTemplateFunction, $filename, $path);
 
         return $tmpl;
     }

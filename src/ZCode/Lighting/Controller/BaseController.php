@@ -11,6 +11,7 @@
 
 namespace ZCode\Lighting\Controller;
 
+use ZCode\Lighting\Http\ServerInfo;
 use ZCode\Lighting\Object\BaseObject;
 use ZCode\Lighting\Template\Template;
 
@@ -45,6 +46,15 @@ abstract class BaseController extends BaseObject
         return $tmpl;
     }
 
+    public function getGlobalTemplate($filename, $path)
+    {
+        $basePath = $this->serverInfo->getData(ServerInfo::DOC_ROOT);
+        $tmpl = new Template($this->logger);
+        $tmpl->loadTemplate($filename, $basePath.'/'.$path);
+
+        return $tmpl;
+    }
+
     protected function createView($viewName)
     {
         $view = null;
@@ -56,6 +66,7 @@ abstract class BaseController extends BaseObject
         $view->serverInfo = $this->serverInfo;
 
         $view->setTemplateFunction(array($this, 'getTemplate'));
+        $view->setGlobalTemplateFunction(array($this, 'getGlobalTemplate'));
         $view->setAddCssFunction(array($this, 'addCss'));
         $view->setAddGlobalCssFunction(array($this, 'addGlobalCss'));
         $view->setAddJsFunction(array($this, 'addJs'));
