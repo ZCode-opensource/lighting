@@ -74,13 +74,7 @@ class BaseModule extends BaseObject
         $this->moduleCssList = array_merge($this->controller->priorityCssList, $this->controller->cssList);
 
         // process the js files
-        $numJs = sizeof($this->controller->jsList);
-
-        if ($numJs > 0) {
-            for ($i = 0; $i < $numJs; $i++) {
-                $this->moduleJsList[] = $this->controller->jsList[$i];
-            }
-        }
+        $this->moduleJsList = array_merge($this->controller->priorityJsList, $this->controller->jsList);
 
         return $this->controller->response;
     }
