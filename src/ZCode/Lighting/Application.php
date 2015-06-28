@@ -204,7 +204,11 @@ class Application
         $moduleFactory->session    = $this->session;
         $moduleFactory->ajax       = $ajax;
 
-        $moduleFactory->projectNamespace = $this->config->getConfig('application', 'project_namespace', false);
+        $this->serverInfo->setData(
+            ServerInfo::PROJECT_NAMESPACE,
+            $this->config->getConfig('application', 'project_namespace', false)
+        );
+
         $this->module = $moduleFactory->create(ModuleFactory::MODULE);
         $this->module->setModuleName($module);
         $response = $this->module->getResponse();

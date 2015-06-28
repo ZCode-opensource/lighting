@@ -11,6 +11,8 @@
 
 namespace ZCode\Lighting\Controller;
 
+use ZCode\Lighting\Factory\ProjectFactory;
+use ZCode\Lighting\Factory\WidgetFactory;
 use ZCode\Lighting\Http\ServerInfo;
 use ZCode\Lighting\Object\BaseObject;
 use ZCode\Lighting\Template\Template;
@@ -21,117 +23,135 @@ abstract class BaseController extends BaseObject
     public $response;
     public $serverInfo;
     public $session;
-    public $projectNamespace;
     public $resourcePath;
     public $moduleName;
     public $databases;
+    public $priorityCssList;
     public $cssList;
-    public $globalCssList;
     public $jsList;
-    public $globalJsList;
+    public $priorityJsList;
 
     abstract public function run();
     abstract public function runAjax();
 
     public function init()
     {
+        $this->priorityCssList = [];
+        $this->cssList         = [];
+        $this->priorityJsList  = [];
+        $this->jsList          = [];
+
         $this->response = '';
     }
 
-    public function getTemplate($filename)
+    public function getTemplate($filename, $path)
     {
+        $docRoot = $this->serverInfo->getData(ServerInfo::DOC_ROOT);
+
         $tmpl = new Template($this->logger);
-        $tmpl->loadTemplate($filename, $this->resourcePath.'html/');
+        $tmpl->loadTemplate($filename, $docRoot.'/'.$path);
 
         return $tmpl;
     }
 
-    public function getGlobalTemplate($filename, $path)
+    protected function createView($name)
     {
-        $basePath = $this->serverInfo->getData(ServerInfo::DOC_ROOT);
-        $tmpl = new Template($this->logger);
-        $tmpl->loadTemplate($filename, $basePath.'/'.$path);
+        $view = $this->getObject(ProjectFactory::VIEW, $name);
 
-        return $tmpl;
-    }
-
-    protected function createView($viewName)
-    {
-        $view = null;
-
-        $class  = $this->projectNamespace.'\Modules\\'.$this->moduleName.'\Views\\'.$viewName;
-        $rClass = new \ReflectionClass($class);
-        $view   = $rClass->newInstance($this->logger);
-
-        $view->serverInfo = $this->serverInfo;
-
-        $view->templateFunction = array($this, 'getTemplate');
-        $view->globalTemplateFunction = array($this, 'getGlobalTemplate');
-        $view->addCssFunction = array($this, 'addCss');
-        $view->addGlobalCssFunction = array($this, 'addGlobalCss');
-        $view->addJsFunction = array($this, 'addJs');
-        $view->addGlobalJsFunction = array($this, 'addGlobalJs');
+        if ($view) {
+            $view->serverInfo           = $this->serverInfo;
+            $view->resourcePath         = $this->resourcePath;
+            $view->templateFunction     = array($this, 'getTemplate');
+            $view->addCssFunction       = array($this, 'addCss');
+            $view->addJsFunction        = array($this, 'addJs');
+            $view->createWidgetFunction = array($this, 'createWidget');
+        }
 
         return $view;
     }
 
-    protected function createModel($modelName)
+    public function createWidget($name)
     {
-        $model = null;
+        $projectNameSpace = $this->serverInfo->getData(ServerInfo::PROJECT_NAMESPACE);
+        $factory = new WidgetFactory($this->logger);
 
-        $class  = $this->projectNamespace.'\Modules\\'.$this->moduleName.'\Models\\'.$modelName;
-        $rClass = new \ReflectionClass($class);
-        $model  = $rClass->newInstance($this->logger);
+        $factory->basePath = $projectNameSpace.'\Widgets\\'.$name;
+        $widget            = $factory->create($name);
 
-        $model->setDatabases($this->databases);
+        $widget->widgetName       = $name;
+        $widget->resourcePath     = 'src/'.str_replace('\\', '/', $factory->basePath).'/resources/';
+        $widget->serverInfo       = $this->serverInfo;
+        $widget->templateFunction = array($this, 'getTemplate');
+        $widget->addCssFunction   = array($this, 'addPriorityCss');
+        $widget->addJsFunction    = array($this, 'addPriorityJs');
+
+        return $widget;
+    }
+
+    protected function createModel($name)
+    {
+        $model = $this->getObject(ProjectFactory::MODEL, $name);
+
+        if ($model) {
+            $model->setDatabases($this->databases);
+        }
 
         return $model;
     }
 
-    protected function createController($controllerName)
+    protected function createController($name)
     {
-        $controller = null;
+        $controller = $this->getObject(ProjectFactory::CONTROLLER, $name);
 
-        $class       = $this->projectNamespace.'\Modules\\'.$this->moduleName.'\Controllers\\'.$controllerName;
-        $rClass      = new \ReflectionClass($class);
-        $controller  = $rClass->newInstance($this->logger);
-
-        $controller->databases        = $this->databases;
-        $controller->request          = $this->request;
-        $controller->serverInfo       = $this->serverInfo;
-        $controller->session          = $this->session;
-        $controller->projectNamespace = $this->projectNamespace;
-        $controller->resourcePath     = $this->resourcePath;
-        $controller->moduleName       = $this->moduleName;
+        if ($controller) {
+            $controller->databases        = $this->databases;
+            $controller->request          = $this->request;
+            $controller->serverInfo       = $this->serverInfo;
+            $controller->session          = $this->session;
+            $controller->projectNamespace = $this->projectNamespace;
+            $controller->resourcePath     = $this->resourcePath;
+            $controller->moduleName       = $this->moduleName;
+        }
 
         return $controller;
+    }
+
+    private function getObject($type, $name)
+    {
+        $projectNameSpace = $this->serverInfo->getData(ServerInfo::PROJECT_NAMESPACE);
+
+        $factory = new ProjectFactory($this->logger);
+        $factory->basePath = $projectNameSpace.'\Modules\\'.$this->moduleName;
+        $object  = $factory->create($type, $name);
+
+        return $object;
     }
 
     public function addCss($file)
     {
         if (strlen($file) > 0) {
-            $this->cssList[] = $file;
+            $this->cssList[] = $file.'.css';
         }
     }
 
-    public function addGlobalCss($file)
+    public function addPriorityCss($file)
     {
         if (strlen($file) > 0) {
-            $this->globalCssList[] = $file;
-         }
+            $this->priorityCssList[] = $file.'.css';
+        }
     }
 
     public function addJs($file)
     {
         if (strlen($file) > 0) {
-            $this->jsList[] = $file;
+            $this->jsList[] = $file.'.js';
         }
     }
 
-    public function addGlobalJs($file)
+    public function addPriorityJs($file)
     {
         if (strlen($file) > 0) {
-            $this->globalJsList[] = $file;
+            $this->priorityJsList[] = $file.'.js';
         }
     }
 

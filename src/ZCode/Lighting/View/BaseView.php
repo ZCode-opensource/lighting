@@ -11,56 +11,58 @@
 
 namespace ZCode\Lighting\View;
 
+use ZCode\Lighting\Http\ServerInfo;
 use ZCode\Lighting\Object\BaseObject;
 
 class BaseView extends BaseObject
 {
     public $templateFunction;
-    public $globalTemplateFunction;
     public $addCssFunction;
-    public $addGlobalCssFunction;
     public $addJsFunction;
-    public $addGlobalJsFunction;
+    public $createWidgetFunction;
 
     public $serverInfo;
+    public $resourcePath;
 
     protected function addCss($file)
     {
-        call_user_func_array($this->addCssFunction, array($file));
+        $baseUrl = $this->serverInfo->getData(ServerInfo::BASE_URL);
+        call_user_func($this->addCssFunction, $baseUrl.$this->resourcePath.'css/'.$file);
     }
 
     protected function addGlobalCss($file)
     {
-        call_user_func_array($this->addGlobalCssFunction, array($file));
+        $baseUrl = $this->serverInfo->getData(ServerInfo::BASE_URL);
+        call_user_func($this->addCssFunction, $baseUrl.'resources/css/'.$file);
     }
 
     protected function addJs($file)
     {
-        call_user_func_array($this->addJsFunction, array($file));
+        $baseUrl = $this->serverInfo->getData(ServerInfo::BASE_URL);
+        call_user_func($this->addJsFunction, $baseUrl.$this->resourcePath.'js/'.$file);
     }
 
     protected function addGlobalJs($file)
     {
-        call_user_func_array($this->addGlobalJsFunction, array($file));
+        $baseUrl = $this->serverInfo->getData(ServerInfo::BASE_URL);
+        call_user_func($this->addJsFunction, $baseUrl.'resources/js/'.$file);
     }
 
     protected function loadTemplate($filename)
     {
-        $tmpl = call_user_func($this->templateFunction, $filename);
-
+        $docRoot = $this->serverInfo->getData(ServerInfo::DOC_ROOT);
+        $tmpl = call_user_func($this->templateFunction, $filename, $this->resourcePath.'html');
         return $tmpl;
     }
 
-    protected function loadGlobalTemplate($filename, $path)
+    protected function createWidget($widgetClass)
     {
-        $tmpl = call_user_func($this->globalTemplateFunction, $filename, $path);
-
-        return $tmpl;
+        $widget = call_user_func($this->createWidgetFunction, $widgetClass);
+        return $widget;
     }
 
     protected function generateSelectOptions($items, $itemId) {
         $options = '';
-
 
         if ($items) {
             $numItems = sizeof($items);
