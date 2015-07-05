@@ -108,7 +108,6 @@ abstract class BaseController extends BaseObject
             $controller->request          = $this->request;
             $controller->serverInfo       = $this->serverInfo;
             $controller->session          = $this->session;
-            $controller->projectNamespace = $this->projectNamespace;
             $controller->resourcePath     = $this->resourcePath;
             $controller->moduleName       = $this->moduleName;
         }
