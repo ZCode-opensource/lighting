@@ -153,7 +153,7 @@ class Application
             true
         );
 
-        $errorVar = '1';
+        $errorVar = '0';
 
         if ($displayErrors) {
             $errorVar = '1';
