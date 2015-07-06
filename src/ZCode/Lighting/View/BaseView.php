@@ -11,71 +11,58 @@
 
 namespace ZCode\Lighting\View;
 
+use ZCode\Lighting\Http\ServerInfo;
 use ZCode\Lighting\Object\BaseObject;
 
 class BaseView extends BaseObject
 {
-    private $templateFunction;
-    private $addCssFunction;
-    private $addGlobalCssFunction;
-    private $addJsFunction;
-    private $addGlobalJsFunction;
+    public $templateFunction;
+    public $addCssFunction;
+    public $addJsFunction;
+    public $createWidgetFunction;
 
-    public function setTemplateFunction($function)
-    {
-        $this->templateFunction = $function;
-    }
-
-    public function setAddCssFunction($function)
-    {
-        $this->addCssFunction = $function;
-    }
+    public $serverInfo;
+    public $resourcePath;
 
     protected function addCss($file)
     {
-        call_user_func_array($this->addCssFunction, array($file));
-    }
-
-    public function setAddGlobalCssFunction($function)
-    {
-        $this->addGlobalCssFunction = $function;
+        $baseUrl = $this->serverInfo->getData(ServerInfo::BASE_URL);
+        call_user_func($this->addCssFunction, $baseUrl.$this->resourcePath.'css/'.$file);
     }
 
     protected function addGlobalCss($file)
     {
-        call_user_func_array($this->addGlobalCssFunction, array($file));
-    }
-
-    public function setAddJsFunction($function)
-    {
-        $this->addJsFunction = $function;
+        $baseUrl = $this->serverInfo->getData(ServerInfo::BASE_URL);
+        call_user_func($this->addCssFunction, $baseUrl.'resources/css/'.$file);
     }
 
     protected function addJs($file)
     {
-        call_user_func_array($this->addJsFunction, array($file));
-    }
-
-    public function setAddGlobalJsFunction($function)
-    {
-        $this->addGlobalJsFunction = $function;
+        $baseUrl = $this->serverInfo->getData(ServerInfo::BASE_URL);
+        call_user_func($this->addJsFunction, $baseUrl.$this->resourcePath.'js/'.$file);
     }
 
     protected function addGlobalJs($file)
     {
-        call_user_func_array($this->addGlobalJsFunction, array($file));
+        $baseUrl = $this->serverInfo->getData(ServerInfo::BASE_URL);
+        call_user_func($this->addJsFunction, $baseUrl.'resources/js/'.$file);
     }
 
     protected function loadTemplate($filename)
     {
-        $tmpl = call_user_func($this->templateFunction, $filename);
-
+        $docRoot = $this->serverInfo->getData(ServerInfo::DOC_ROOT);
+        $tmpl = call_user_func($this->templateFunction, $filename, $this->resourcePath.'html');
         return $tmpl;
+    }
+
+    protected function createWidget($widgetClass)
+    {
+        $widget = call_user_func($this->createWidgetFunction, $widgetClass);
+        return $widget;
     }
 
     protected function generateSelectOptions($items, $itemId) {
         $options = '';
-
 
         if ($items) {
             $numItems = sizeof($items);

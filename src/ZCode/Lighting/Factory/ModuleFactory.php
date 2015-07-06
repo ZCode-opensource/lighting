@@ -19,7 +19,6 @@ class ModuleFactory extends BaseFactory
     public $session;
     public $serverInfo;
     public $ajax;
-    public $projectNamespace;
     public $databases;
 
     protected function init()
@@ -35,7 +34,6 @@ class ModuleFactory extends BaseFactory
         $object->session          = $this->session;
         $object->serverInfo       = $this->serverInfo;
         $object->ajax             = $this->ajax;
-        $object->projectNamespace = $this->projectNamespace;
         $object->databases        = $this->databases;
 
         return $object;

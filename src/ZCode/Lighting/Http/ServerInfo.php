@@ -10,11 +10,11 @@ use ZCode\Lighting\Object\BaseObject;
  */
 class ServerInfo extends BaseObject
 {
-    const BASE_URL      = 0;
-    const DOC_ROOT      = 1;
-    const INTERNAL_PATH = 2;
-    const RELATIVE_PATH = 3;
-    const MODULE        = 4;
+    const BASE_URL          = 0;
+    const DOC_ROOT          = 1;
+    const RELATIVE_PATH     = 2;
+    const MODULE            = 3;
+    const PROJECT_NAMESPACE = 4;
 
     private $data;
     private $relativePath;

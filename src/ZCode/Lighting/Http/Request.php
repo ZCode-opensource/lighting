@@ -70,6 +70,7 @@ class Request extends BaseObject
                 $validated = true;
                 break;
             case self::STRING:
+                $value = trim($value);
                 if (is_string($value) && strlen($value) > 0) {
                     $validated = true;
                 }

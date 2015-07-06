@@ -115,11 +115,9 @@ class MysqlProvider extends DatabaseProvider
 
         if (is_array($data)) {
             foreach ($data as $key => $value) {
-                if ($value) {
-                    $fields    .= $key.',';
-                    $positions .= '?,';
-                    $params[]   = &$data[$key];
-                }
+                $fields    .= $key.',';
+                $positions .= '?,';
+                $params[]   = &$data[$key];
             }
 
             $fields[(strlen($fields)-1)]         = ' ';
