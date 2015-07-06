@@ -98,10 +98,19 @@ class Application
         // convert first letter to uppercase
         $module = ucwords($module);
 
-        $this->serverInfo->setData(ServerInfo::MODULE, $module);
-        $ajax            = $this->request->getVar('ajax', Request::BOOLEAN);
-        $moduleResponse  = $this->generateModuleResponse($module, $ajax);
+        // xdebug configuration
+        $xdebug = 2;
 
+        $this->serverInfo->setData(ServerInfo::MODULE, $module);
+        $ajax = $this->request->getVar('ajax', Request::BOOLEAN);
+
+        if ($ajax) {
+            $xdebug = 0;
+        }
+
+        ini_set('xdebug.overload_var_dump', $xdebug);
+
+        $moduleResponse = $this->generateModuleResponse($module, $ajax);
         $this->renderResponse($moduleResponse, $ajax);
     }
 
