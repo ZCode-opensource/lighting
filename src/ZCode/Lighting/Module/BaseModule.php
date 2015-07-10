@@ -38,7 +38,7 @@ class BaseModule extends BaseObject
     private function moduleInit()
     {
         $projectNameSpace = $this->serverInfo->getData(ServerInfo::PROJECT_NAMESPACE);
-        $class            = $projectNameSpace.'\Modules\\'.$this->moduleName.'\Controller';
+        $class            = $projectNameSpace.'\Modules\\'.$this->moduleName.'\\'.$this->moduleName.'Controller';
 
         try {
             $rClass = new \ReflectionClass($class);
