@@ -232,7 +232,7 @@ class Application
         }
 
         // Generate footer module if needed
-        $genrateFooter = $this->config->getConfig('footer', 'footer_module', false);
+        $genrateFooter = $this->config->getConfig('footer', 'generate_footer', true);
 
         if ($genrateFooter) {
             $footerModule = $this->config->getConfig('footer', 'footer_module', false);
