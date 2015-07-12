@@ -11,6 +11,10 @@
 
 namespace ZCode\Lighting\Factory;
 
+use ZCode\Lighting\Controller\BaseController;
+use ZCode\Lighting\Model\BaseModel;
+use ZCode\Lighting\View\BaseView;
+
 class ProjectFactory extends BaseFactory
 {
     const MODEL      = 0;
@@ -21,16 +25,18 @@ class ProjectFactory extends BaseFactory
 
     protected function init()
     {
-        $this->classArray = array(
-            '\Models',
-            '\Views',
-            '\Controllers'
-        );
+        $this->classArray = ['\Models',  '\Views', '\Controllers'];
     }
 
     public function create($type, $name)
     {
-        $obj = $this->createObject($type, $name);
+        $obj = $this->createObject($this->getClass($type), $name);
+        return $obj;
+    }
+
+    public function customCreate($path, $name)
+    {
+        $obj = $this->createObject($path, $name);
         return $obj;
     }
 
@@ -39,9 +45,21 @@ class ProjectFactory extends BaseFactory
         return $this->basePath.$this->classArray[$type];
     }
 
-    protected function createObject($type, $name)
+    /**
+     * Instantiate the class and return the object created.
+     *
+     * This method instantiates the class that could be a model, view or controller for using inside
+     * the module. The class used to instantiate the object depends on the path and the name of the class.
+     * This method should only be used to instantiate a class of the type BaseModel, BaseView or BaseController.
+     *
+     * @param string $path Path inside the module that contains the class
+     * @param string $name Name of the class to instantiate
+     *
+     * @return BaseModel|BaseView|BaseController Depending on the type, returns the model, view or controller
+     */
+    protected function createObject($path, $name)
     {
-        $class  = $this->getClass($type).'\\'.$name;
+        $class  = $path.'\\'.$name;
         $classR = new \ReflectionClass($class);
         $object = $classR->newInstance($this->logger);
         $object = $this->additionalSetup($object);

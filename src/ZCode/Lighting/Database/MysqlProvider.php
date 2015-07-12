@@ -13,6 +13,7 @@ namespace ZCode\Lighting\Database;
 
 class MysqlProvider extends DatabaseProvider
 {
+    /** @var \mysqli MySQLi object */
     private $mysqli;
 
     public function connect()
@@ -44,9 +45,10 @@ class MysqlProvider extends DatabaseProvider
 
     public function loadField($field)
     {
-        $value = '';
+        $value  = '';
+        $result = $this->mysqli->query($this->query);
 
-        if ($result = $this->mysqli->query($this->query)) {
+        if ($result) {
             $this->numRows = $result->num_rows;
 
             if ($this->numRows == 0) {
@@ -65,8 +67,9 @@ class MysqlProvider extends DatabaseProvider
     public function loadObject()
     {
         $object = new \stdClass();
+        $result = $this->mysqli->query($this->query);
 
-        if ($result = $this->mysqli->query($this->query)) {
+        if ($result) {
             $this->numRows = $result->num_rows;
 
             if ($this->numRows == 0) {
@@ -83,9 +86,10 @@ class MysqlProvider extends DatabaseProvider
 
     public function loadObjectList()
     {
-        $objects = array();
+        $objects = [];
+        $result  = $this->mysqli->query($this->query);
 
-        if ($result = $this->mysqli->query($this->query)) {
+        if ($result) {
             $this->numRows = $result->num_rows;
 
             if ($this->numRows == 0) {
@@ -93,7 +97,8 @@ class MysqlProvider extends DatabaseProvider
                 return false;
             }
 
-            while ($object = $result->fetch_object()) {
+            for ($i = 0; $i < $this->numRows; $i++) {
+                $object = $result->fetch_object();
                 $objects[] = $object;
             }
 
@@ -107,31 +112,34 @@ class MysqlProvider extends DatabaseProvider
     {
         $fields    = '';
         $positions = '';
-        $params    = array($types);
+        $params    = [$types];
 
         if (is_object($data)) {
             $data = get_object_vars($data);
         }
 
         if (is_array($data)) {
-            foreach ($data as $key => $value) {
-                $fields    .= $key.',';
+            $keys    = array_keys($data);
+            $numKeys = sizeof($keys);
+
+            for ($i = 0; $i < $numKeys; $i++) {
+                $fields    .= $keys[$i].',';
                 $positions .= '?,';
-                $params[]   = &$data[$key];
+                $params[]   = &$data[$keys[$i]];
             }
 
             $fields[(strlen($fields)-1)]         = ' ';
-            $positions[(strlen($positions)-1)] = ' ';
+            $positions[(strlen($positions)-1)]   = ' ';
 
-            $query = 'INSERT INTO '.$table.'('.$fields.') VALUES ('.$positions.');';
+            $query = "INSERT INTO $table($fields) VALUES ($positions);";
 
             if (!($stmt = $this->mysqli->prepare($query))) {
-                // TODO: Log the error
                 $this->logger->addError($this->mysqli->error);
+                $this->logger->addError('Query: '.$query);
                 return false;
             }
 
-            call_user_func_array(array($stmt, 'bind_param'), $params);
+            call_user_func_array([$stmt, 'bind_param'], $params);
 
             if (!$stmt->execute()) {
                 $this->logger->addError($this->mysqli->error);
@@ -149,69 +157,85 @@ class MysqlProvider extends DatabaseProvider
 
     public function updateRow($table, $data, $types, $keys)
     {
-        $keyArray = false;
-        $numKeys  = 0;
+        $keysObj = $this->processKeys($keys);
+
+        if ($keysObj !== null) {
+            $updFlds = '';
+            $params  = [$types.$keysObj->types];
+
+            $dataKeys = array_keys($data);
+            $numKeys  = sizeof($dataKeys);
+
+            for ($i = 0; $i < $numKeys; $i++) {
+                $updFlds   .= $dataKeys[$i].'=?,';
+                $params[]   = &$data[$dataKeys[$i]];
+            }
+
+            $numKeys = sizeof($keysObj->values);
+            for ($i = 0; $i < $numKeys; $i++) {
+                $params[] = &$keysObj->values[$i];
+            }
+
+            $updFlds[(strlen($updFlds)-1)] = ' ';
+            $query = 'UPDATE '.$table.' SET '.$updFlds.$keysObj->where;
+
+            if (!($stmt = $this->mysqli->prepare($query))) {
+                $this->logger->addError($this->mysqli->error);
+                return false;
+            }
+
+            call_user_func_array([$stmt, 'bind_param'], $params);
+
+            if (!$stmt->execute()) {
+                $this->logger->addError($this->mysqli->error);
+            }
+
+            $this->lastId = $stmt->insert_id;
+            $stmt->close();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private function processKeys($keys)
+    {
+        $keysObject = null;
+        $keyArray   = false;
+        $types      = '';
+        $values     = [];
+        $where      = 'WHERE ';
 
         if (isset($keys[0]) && is_array($keys[0])) {
             $keyArray = true;
         }
 
-        $updateFields = '';
-        $params       = array($types);
-
         if ($keyArray) {
             $numKeys = sizeof($keys);
 
             for ($i = 0; $i < $numKeys; $i++) {
-                $params[0] .= $keys[$i]['type'];
+                $types   .= $keys[$i]['type'];
+                $values[] = &$keys[$i]['value'];
+                $where   .= $keys[$i]['field'].' = ? AND ';
+                $where    = substr($where, 0, (strlen($where) - 4));
             }
         } else {
-            $params[0] .= $keys['type'];
+            $types   .= $keys['type'];
+            $values[] = &$keys['value'];
+            $where   .= $keys['field'].' = ?';
         }
 
-        foreach ($data as $field => $value) {
-            $updateFields .= $field.'=?,';
-            $params[]      = &$data[$field];
+        $typesLength = strlen($types);
+        $numValues   = sizeof($values);
+
+        if ($typesLength > 0 && $typesLength === $numValues) {
+            $keysObject = new \stdClass();
+            $keysObject->types  = $types;
+            $keysObject->values = $values;
+            $keysObject->where  = $where.';';
         }
 
-        if ($keyArray) {
-            for ($i = 0; $i < $numKeys; $i++) {
-                $params[] = &$keys[$i]['value'];
-            }
-        } else {
-            $params[] = &$keys['value'];
-        }
-
-        $updateFields[(strlen($updateFields)-1)] = ' ';
-
-        if ($keyArray) {
-            $whereClause = '';
-
-            for ($i = 0; $i < $numKeys; $i++) {
-                $whereClause .= $keys[$i]['field'].' = ? AND ';
-            }
-
-            $whereClause = substr($whereClause, 0, (strlen($whereClause)-4));
-            $query         = 'UPDATE '.$table.' SET '.$updateFields.' WHERE '.$whereClause.';';
-        } else {
-            $query = 'UPDATE '.$table.' SET '.$updateFields.' WHERE '.$keys['field'].' = ?;';
-        }
-
-
-        if (!($stmt = $this->mysqli->prepare($query))) {
-            $this->logger->addError($this->mysqli->error);
-            return false;
-        }
-
-        call_user_func_array(array($stmt, 'bind_param'), $params);
-
-        if (!$stmt->execute()) {
-            $this->logger->addError($this->mysqli->error);
-        }
-
-        $this->lastId = $stmt->insert_id;
-        $stmt->close();
-
-        return true;
+        return $keysObject;
     }
 }

@@ -13,15 +13,24 @@ namespace ZCode\Lighting\Controller;
 
 use ZCode\Lighting\Factory\ProjectFactory;
 use ZCode\Lighting\Factory\WidgetFactory;
+use ZCode\Lighting\Http\Request;
+use ZCode\Lighting\Http\Response;
 use ZCode\Lighting\Http\ServerInfo;
+use ZCode\Lighting\Model\BaseModel;
 use ZCode\Lighting\Object\BaseObject;
 use ZCode\Lighting\Template\Template;
 
 abstract class BaseController extends BaseObject
 {
+    /** @var  Request Request object*/
     public $request;
+
+    /** @var  Response Response object*/
     public $response;
+
+    /** @var  ServerInfo ServerInfo object*/
     public $serverInfo;
+
     public $session;
     public $resourcePath;
     public $moduleName;
@@ -61,10 +70,10 @@ abstract class BaseController extends BaseObject
         if ($view) {
             $view->serverInfo           = $this->serverInfo;
             $view->resourcePath         = $this->resourcePath;
-            $view->templateFunction     = array($this, 'getTemplate');
-            $view->addCssFunction       = array($this, 'addCss');
-            $view->addJsFunction        = array($this, 'addJs');
-            $view->createWidgetFunction = array($this, 'createWidget');
+            $view->templateFunction     = [$this, 'getTemplate'];
+            $view->addCssFunction       = [$this, 'addCss'];
+            $view->addJsFunction        = [$this, 'addJs'];
+            $view->createWidgetFunction = [$this, 'createWidget'];
         }
 
         return $view;
@@ -81,9 +90,9 @@ abstract class BaseController extends BaseObject
         $widget->widgetName       = $name;
         $widget->resourcePath     = 'src/'.str_replace('\\', '/', $factory->basePath).'/resources/';
         $widget->serverInfo       = $this->serverInfo;
-        $widget->templateFunction = array($this, 'getTemplate');
-        $widget->addCssFunction   = array($this, 'addPriorityCss');
-        $widget->addJsFunction    = array($this, 'addPriorityJs');
+        $widget->templateFunction = [$this, 'getTemplate'];
+        $widget->addCssFunction   = [$this, 'addPriorityCss'];
+        $widget->addJsFunction    = [$this, 'addPriorityJs'];
 
         return $widget;
     }
@@ -91,7 +100,21 @@ abstract class BaseController extends BaseObject
     protected function createModel($name)
     {
         $model = $this->getObject(ProjectFactory::MODEL, $name);
+        $model = $this->seedModel($model);
 
+        return $model;
+    }
+
+    protected function createCustomModel($name, $path)
+    {
+        $model = $this->getCustomObject($name, '\\Models\\'.$path);
+        $model = $this->seedModel($model);
+
+        return $model;
+    }
+
+    private function seedModel(BaseModel $model)
+    {
         if ($model) {
             $model->setDatabases($this->databases);
         }
@@ -102,7 +125,21 @@ abstract class BaseController extends BaseObject
     protected function createController($name)
     {
         $controller = $this->getObject(ProjectFactory::CONTROLLER, $name);
+        $controller = $this->seedController($controller);
 
+        return $controller;
+    }
+
+    protected function createCustomController($name, $path)
+    {
+        $controller = $this->getCustomObject($name, '\\Controllers\\'.$path);
+        $controller = $this->seedController($controller);
+
+        return $controller;
+    }
+
+    private function seedController($controller)
+    {
         if ($controller) {
             $controller->databases        = $this->databases;
             $controller->request          = $this->request;
@@ -117,11 +154,27 @@ abstract class BaseController extends BaseObject
 
     private function getObject($type, $name)
     {
-        $projectNameSpace = $this->serverInfo->getData(ServerInfo::PROJECT_NAMESPACE);
-
-        $factory = new ProjectFactory($this->logger);
+        $projectNameSpace  = $this->serverInfo->getData(ServerInfo::PROJECT_NAMESPACE);
+        $factory           = new ProjectFactory($this->logger);
         $factory->basePath = $projectNameSpace.'\Modules\\'.$this->moduleName;
+
         $object  = $factory->create($type, $name);
+
+        return $object;
+    }
+
+    private function getCustomObject($name, $path)
+    {
+        $object = null;
+
+        if ($path !== null && strlen($path) > 0) {
+            $path = str_replace('/', '\\', $path);
+
+            $projectNameSpace  = $this->serverInfo->getData(ServerInfo::PROJECT_NAMESPACE);
+            $factory           = new ProjectFactory($this->logger);
+            $factory->basePath = $projectNameSpace.'\Modules\\'.$this->moduleName.$path;
+            $object            = $factory->customCreate($factory->basePath, $name);
+        }
 
         return $object;
     }
@@ -156,7 +209,7 @@ abstract class BaseController extends BaseObject
 
     protected function generateJsonResponse($success, $message, $data)
     {
-        $jsonArray = array('success' => $success, 'message' => $message);
+        $jsonArray = ['success' => $success, 'message' => $message];
 
         if ($data && is_array($data)) {
             foreach ($data as $key => $value) {

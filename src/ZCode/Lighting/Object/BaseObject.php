@@ -11,8 +11,11 @@
 
 namespace ZCode\Lighting\Object;
 
+use Monolog\Logger;
+
 abstract class BaseObject
 {
+    /** @var Logger Monolog logger object*/
     protected $logger;
 
     public function __construct($logger)

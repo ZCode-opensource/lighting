@@ -11,15 +11,16 @@
 
 namespace ZCode\Lighting\Model;
 
-
+use ZCode\Lighting\Database\DatabaseProvider;
 use ZCode\Lighting\Object\BaseObject;
 
 class BaseModel extends BaseObject
 {
     const STRING  = 1;
     const INTEGER = 2;
-    const FECHA   = 3;
+    const DATE    = 3;
 
+    /** @var  DatabaseProvider[] Array of databases created from the configuration file. */
     private $databases;
 
     protected $table;
@@ -29,7 +30,7 @@ class BaseModel extends BaseObject
 
     protected function init()
     {
-        $this->databases = array();
+        $this->databases = [];
     }
 
     public function setDatabases($databases)
@@ -40,12 +41,18 @@ class BaseModel extends BaseObject
         if ($numDatabases > 0) {
             $this->databases = $databases;
 
-            foreach($this->databases as $value) {
+            foreach ($this->databases as $value) {
                 $value->connect();
             }
         }
     }
 
+    /**
+     * Returns a DatabaseProvider object for using inside models.
+     *
+     * @param string $name Name of the database that was set inside de framework configuration file.
+     * @return DatabaseProvider
+     */
     public function getDatabase($name)
     {
         if (isset($this->databases[$name])) {
@@ -70,7 +77,7 @@ class BaseModel extends BaseObject
                     $this->types       .= 'i';
                 }
                 break;
-            case self::STRING:
+            case self::DATE:
                 if (strlen($value) > 0) {
                     $this->data[$field] = $this->convertDate($value);
                     $this->types       .= 's';
@@ -89,4 +96,4 @@ class BaseModel extends BaseObject
 
         return $mysqlDate;
     }
-} 
+}
