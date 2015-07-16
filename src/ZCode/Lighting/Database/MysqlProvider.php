@@ -115,7 +115,7 @@ class MysqlProvider extends DatabaseProvider
         $params    = [$types];
 
         if (is_object($data)) {
-            $data = get_object_vars($data);
+            $data = $this->objectToArray($data);
         }
 
         if (is_array($data)) {
@@ -163,37 +163,43 @@ class MysqlProvider extends DatabaseProvider
             $updFlds = '';
             $params  = [$types.$keysObj->types];
 
-            $dataKeys = array_keys($data);
-            $numKeys  = sizeof($dataKeys);
-
-            for ($i = 0; $i < $numKeys; $i++) {
-                $updFlds   .= $dataKeys[$i].'=?,';
-                $params[]   = &$data[$dataKeys[$i]];
+            if (is_object($data)) {
+                $data = $this->objectToArray($data);
             }
 
-            $numKeys = sizeof($keysObj->values);
-            for ($i = 0; $i < $numKeys; $i++) {
-                $params[] = &$keysObj->values[$i];
+            if (is_array($data)) {
+                $dataKeys = array_keys($data);
+                $numKeys  = sizeof($dataKeys);
+
+                for ($i = 0; $i < $numKeys; $i++) {
+                    $updFlds   .= $dataKeys[$i].'=?,';
+                    $params[]   = &$data[$dataKeys[$i]];
+                }
+
+                $numKeys = sizeof($keysObj->values);
+                for ($i = 0; $i < $numKeys; $i++) {
+                    $params[] = &$keysObj->values[$i];
+                }
+
+                $updFlds[(strlen($updFlds)-1)] = ' ';
+                $query = 'UPDATE '.$table.' SET '.$updFlds.$keysObj->where;
+
+                if (!($stmt = $this->mysqli->prepare($query))) {
+                    $this->logger->addError($this->mysqli->error);
+                    return false;
+                }
+
+                call_user_func_array([$stmt, 'bind_param'], $params);
+
+                if (!$stmt->execute()) {
+                    $this->logger->addError($this->mysqli->error);
+                }
+
+                $this->lastId = $stmt->insert_id;
+                $stmt->close();
+
+                return true;
             }
-
-            $updFlds[(strlen($updFlds)-1)] = ' ';
-            $query = 'UPDATE '.$table.' SET '.$updFlds.$keysObj->where;
-
-            if (!($stmt = $this->mysqli->prepare($query))) {
-                $this->logger->addError($this->mysqli->error);
-                return false;
-            }
-
-            call_user_func_array([$stmt, 'bind_param'], $params);
-
-            if (!$stmt->execute()) {
-                $this->logger->addError($this->mysqli->error);
-            }
-
-            $this->lastId = $stmt->insert_id;
-            $stmt->close();
-
-            return true;
         }
 
         return false;
@@ -237,5 +243,19 @@ class MysqlProvider extends DatabaseProvider
         }
 
         return $keysObject;
+    }
+
+    private function objectToArray($data)
+    {
+        $result = [];
+
+        foreach ($data as $key => $value) {
+            if ($value !== null) {
+                $result[$key] = $value;
+            }
+
+        }
+
+        return $result;
     }
 }
