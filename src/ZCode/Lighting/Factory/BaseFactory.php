@@ -15,8 +15,8 @@ use ZCode\Lighting\Object\BaseObject;
 
 abstract class BaseFactory extends BaseObject
 {
+    public $basePath;
     protected $classArray;
-    protected $basePath;
 
     public function create($type)
     {

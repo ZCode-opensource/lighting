@@ -21,8 +21,6 @@ class ProjectFactory extends BaseFactory
     const VIEW       = 1;
     const CONTROLLER = 2;
 
-    public $basePath;
-
     protected function init()
     {
         $this->classArray = ['\Models',  '\Views', '\Controllers'];
