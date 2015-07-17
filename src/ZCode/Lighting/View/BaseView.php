@@ -21,7 +21,9 @@ class BaseView extends BaseObject
     public $addJsFunction;
     public $createWidgetFunction;
 
+    /** @var  ServerInfo ServerInfo object*/
     public $serverInfo;
+
     public $resourcePath;
 
     protected function addCss($file)
@@ -50,7 +52,6 @@ class BaseView extends BaseObject
 
     protected function loadTemplate($filename)
     {
-        $docRoot = $this->serverInfo->getData(ServerInfo::DOC_ROOT);
         $tmpl = call_user_func($this->templateFunction, $filename, $this->resourcePath.'html');
         return $tmpl;
     }

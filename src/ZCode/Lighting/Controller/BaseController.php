@@ -11,6 +11,7 @@
 
 namespace ZCode\Lighting\Controller;
 
+use ZCode\Lighting\Database\DatabaseProvider;
 use ZCode\Lighting\Factory\ProjectFactory;
 use ZCode\Lighting\Factory\WidgetFactory;
 use ZCode\Lighting\Http\Request;
@@ -18,6 +19,7 @@ use ZCode\Lighting\Http\Response;
 use ZCode\Lighting\Http\ServerInfo;
 use ZCode\Lighting\Model\BaseModel;
 use ZCode\Lighting\Object\BaseObject;
+use ZCode\Lighting\Session\Session;
 use ZCode\Lighting\Template\Template;
 
 abstract class BaseController extends BaseObject
@@ -31,10 +33,15 @@ abstract class BaseController extends BaseObject
     /** @var  ServerInfo ServerInfo object*/
     public $serverInfo;
 
+    /** @var  Session Session object */
     public $session;
+
     public $resourcePath;
     public $moduleName;
+
+    /** @var  DatabaseProvider[] Array of databases created from the configuration file. */
     public $databases;
+
     public $priorityCssList;
     public $cssList;
     public $jsList;

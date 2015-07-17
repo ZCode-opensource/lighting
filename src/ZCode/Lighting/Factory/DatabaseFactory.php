@@ -18,13 +18,13 @@ class DatabaseFactory extends BaseFactory
     public $server;
     public $user;
     public $password;
+
+    /** @var  DatabaseProvider Database object. */
     public $database;
 
     protected function init()
     {
-        $this->classArray = array(
-            'Database\MysqlProvider'
-        );
+        $this->classArray = ['Database\MysqlProvider'];
     }
 
     protected function additionalSetup($object)
