@@ -45,7 +45,7 @@ class MysqlProvider extends DatabaseProvider
 
     public function loadField($field)
     {
-        $value  = '';
+        $value  = null;
         $result = $this->mysqli->query($this->query);
 
         if ($result) {
