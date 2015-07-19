@@ -1,34 +1,46 @@
 <?php
 
+/*
+ * This file is part of the ZCode Lighting Web Framework.
+ *
+ * (c) Álvaro Somoza <asomoza@zcode.cl>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace ZCode\Lighting\Http;
 
-use ZCode\Lighting\Configuration\Configuration;
 use ZCode\Lighting\Object\BaseObject;
+use ZCode\Lighting\Validation\Sanitizer;
 
-/**
- * @SuppressWarnings(PHPMD.Superglobals)
- * @SuppressWarnings(PHPMD.CamelCaseVariableName)
- */
 class Request extends BaseObject
 {
     const BOOLEAN   = 1;
     const STRING    = 2;
     const INTEGER   = 3;
     const ARRAY_VAR = 4;
+    const NUMERIC   = 5;
+    const FLOAT     = 6;
 
     private $urlVars;
+    private $getVars;
+    private $postVars;
+    private $requestUri;
 
-    protected function init()
+    public function initializeRequest(array $post, array $get, $requestUri)
     {
-        // TODO: Set configuration for XSS
+        $this->postVars   = $post;
+        $this->getVars    = $get;
+        $this->requestUri = $requestUri;
     }
 
     public function getGetVar($name, $type)
     {
-        $value = false;
+        $value = null;
 
-        if (isset($_GET[$name])) {
-            $value = $this->sanitizeVar($_GET[$name], $type);
+        if (isset($this->getVars[$name])) {
+            $value = $this->sanitizeVar($this->getVars[$name], $type);
         }
 
         return $value;
@@ -36,10 +48,10 @@ class Request extends BaseObject
 
     public function getPostVar($name, $type)
     {
-        $value = false;
+        $value = null;
 
-        if (isset($_POST[$name])) {
-            $value = $this->sanitizeVar($_POST[$name], $type);
+        if (isset($this->postVars[$name])) {
+            $value = $this->sanitizeVar($this->postVars[$name], $type);
         }
 
         return $value;
@@ -47,8 +59,6 @@ class Request extends BaseObject
 
     public function getVar($name, $type)
     {
-        $value = false;
-
         $value = $this->getGetVar($name, $type);
 
         if ($value) {
@@ -62,42 +72,40 @@ class Request extends BaseObject
 
     private function sanitizeVar($value, $type)
     {
-        $validated = false;
+        $result = null;
 
         switch ($type) {
             case self::BOOLEAN:
-                $value     = ($value === 'true');
-                $validated = true;
+                $result = Sanitizer::sanitizeBooleanValue($value);
                 break;
             case self::STRING:
-                $value = trim($value);
-                if (is_string($value) && strlen($value) > 0) {
-                    $validated = true;
-                }
+                $result = Sanitizer::sanitizeStringValue($value);
                 break;
             case self::INTEGER:
-                $value = intval($value);
-                if (is_int($value)) {
-                    $validated = true;
-                }
+                $result = Sanitizer::sanitizeIntegerValue($value);
                 break;
             case self::ARRAY_VAR:
-                if (is_array($value)) {
-                    $validated = true;
-                }
+                $result = Sanitizer::sanitizeArrayValue($value);
+                break;
+            case self::NUMERIC:
+                $result = Sanitizer::sanitizeNumericValue($value);
+                break;
+            case self::FLOAT:
+                $result = Sanitizer::sanitizeFloatValue($value);
                 break;
         }
 
-        if (!$validated) {
-            return $validated;
-        }
-
-        return $value;
+        return $result;
     }
 
+    /**
+     * @param string $internalPath
+     * @param string $path
+     * @return bool|string
+     */
     public function getModule($internalPath, $path)
     {
-        $module = $_SERVER['REQUEST_URI'];
+        $module = $this->requestUri;
 
         if ($internalPath) {
             $module = $this->strReplaceFirst($path, '', $module);

@@ -24,10 +24,7 @@
 
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">../src</directory>
-            <exclude>
-                <file>../src/autoload.php</file>
-            </exclude>
+            <directory suffix=".php">../src/ZCode/Lighting</directory>
         </whitelist>
     </filter>
 </phpunit>

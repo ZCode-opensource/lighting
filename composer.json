@@ -25,5 +25,10 @@
         "psr-4": {
             "ZCode\\Lighting\\" : "src/ZCode/Lighting"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ZCode\\Lighting\\Tests\\" : "tests/ZCode/Lighting/Tests"
+        }
     }
 }
