@@ -26,20 +26,21 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        // PHP makes all $_REQUEST vars as strings
         $get  = [
-            'getTestTrue' => true,
-            'getTestFalse' => false,
+            'getTestTrue' => 'true',
+            'getTestFalse' => 'false',
             'getString' => 'string',
-            'getInteger' => 123,
-            'getArray' => [1,2,3,4],
+            'getInteger' => '123',
+            'getArray' => ['1','2','3', '4'],
             'getNumeric' => '123',
-            'getFloat' => 12.34
+            'getFloat' => '12.34'
         ];
 
         $post = [
-            'postTestTrue' => true,
-            'postTestFalse' => false,
-            'postExclusive' => 1
+            'postTestTrue' => 'true',
+            'postTestFalse' => 'false',
+            'postExclusive' => '1'
         ];
 
         $this->request = new Request(null);
@@ -87,41 +88,41 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         // $_GET['null'] doesn't exit, must return null
         $this->assertNull($this->request->getGetVar('null', Request::BOOLEAN));
 
-        // $_GET['getTestTrue] equals true, must return true
+        // $_GET['getTestTrue'] equals 'true', must return true
         $this->assertTrue($this->request->getGetVar('getTestTrue', Request::BOOLEAN));
 
-        // $_GET['getTestFalse] equals false, must return false
+        // $_GET['getTestFalse'] equals 'false', must return false
         $this->assertFalse($this->request->getGetVar('getTestFalse', Request::BOOLEAN));
 
-        // $_GET['getString] equals "string", must return the word string
+        // $_GET['getString'] equals "string", must return the word string
         $this->assertEquals('string', $this->request->getGetVar('getString', Request::STRING));
 
-        // $_GET['getInteger] equals 123, must return null
-        $this->assertNull($this->request->getGetVar('getInteger', Request::STRING));
+        // $_GET['getArray'] equals an array, must return null
+        $this->assertNull($this->request->getGetVar('getArray', Request::STRING));
 
-        // $_GET['getInteger] equals 123, must return 123
+        // $_GET['getInteger'] equals '123', must return 123
         $this->assertEquals(123, $this->request->getGetVar('getInteger', Request::INTEGER));
 
-        // $_GET['getString] equals "string", must return null
-        $this->assertNull($this->request->getGetVar('getString', Request::INTEGER));
+        // $_GET['getString'] equals "string", must return 0
+        $this->assertEquals(0, $this->request->getGetVar('getString', Request::INTEGER));
 
-        // $_GET['getString] equals "string", must return null
+        // $_GET['getString'] equals "string", must return null
         $this->assertNull($this->request->getGetVar('getString', Request::ARRAY_VAR));
 
-        // $_GET['getArray] equals an array with [1,2,3,4], must return the same array
+        // $_GET['getArray'] equals an array with [1,2,3,4], must return the same array
         $this->assertEquals([1,2,3,4], $this->request->getGetVar('getArray', Request::ARRAY_VAR));
 
-        // $_GET['getNumeric] equals "123", which is a string with numeric chars, must return "123"
+        // $_GET['getNumeric'] equals "123", which is a string with numeric chars, must return "123"
         $this->assertEquals('123', $this->request->getGetVar('getNumeric', Request::NUMERIC));
 
-        // $_GET['getString] equals "string", which is a string with no numeric chars, must return null
+        // $_GET['getString'] equals "string", which is a string with no numeric chars, must return null
         $this->assertNull($this->request->getGetVar('getString', Request::NUMERIC));
 
-        // $_GET['getFloat] equals 12.34, must return 12.34
+        // $_GET['getFloat'] equals 12.34, must return 12.34
         $this->assertEquals(12.34, $this->request->getGetVar('getFloat', Request::FLOAT));
 
-        // $_GET['getInteger] equals 123, must return null
-        $this->assertNull($this->request->getGetVar('getInteger', Request::FLOAT));
+        // $_GET['getString'] equals 'string', must return 0.0
+        $this->assertEquals(0.0, $this->request->getGetVar('getString', Request::FLOAT));
     }
 
     /**
@@ -130,13 +131,13 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetPostVar()
     {
-        // $_POST'null'] doesn't exit, must return null
+        // $_POST['null'] doesn't exit, must return null
         $this->assertNull($this->request->getPostVar('null', Request::BOOLEAN));
 
-        // $_POST['postTestTrue] equals true, must return true
+        // $_POST['postTestTrue'] equals true, must return true
         $this->assertTrue($this->request->getPostVar('postTestTrue', Request::BOOLEAN));
 
-        // $_POST['postTestFalse] equals false, must return false
+        // $_POST['postTestFalse'] equals false, must return false
         $this->assertFalse($this->request->getPostVar('postTestFalse', Request::BOOLEAN));
     }
 

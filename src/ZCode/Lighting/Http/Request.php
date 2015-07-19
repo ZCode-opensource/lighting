@@ -76,12 +76,16 @@ class Request extends BaseObject
 
         switch ($type) {
             case self::BOOLEAN:
+                if ($value === 'true') {
+                    $value = true;
+                }
                 $result = Sanitizer::sanitizeBooleanValue($value);
                 break;
             case self::STRING:
                 $result = Sanitizer::sanitizeStringValue($value);
                 break;
             case self::INTEGER:
+                $value = intval($value);
                 $result = Sanitizer::sanitizeIntegerValue($value);
                 break;
             case self::ARRAY_VAR:
@@ -91,6 +95,7 @@ class Request extends BaseObject
                 $result = Sanitizer::sanitizeNumericValue($value);
                 break;
             case self::FLOAT:
+                $value = floatval($value);
                 $result = Sanitizer::sanitizeFloatValue($value);
                 break;
         }
