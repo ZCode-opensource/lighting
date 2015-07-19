@@ -19,21 +19,42 @@ use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use ZCode\Lighting\Factory\ModuleFactory;
 use ZCode\Lighting\Http\Request;
+use ZCode\Lighting\Http\Response;
 use ZCode\Lighting\Http\ServerInfo;
+use ZCode\Lighting\Module\BaseModule;
+use ZCode\Lighting\Session\Session;
 use ZCode\Lighting\Template\Template;
 
 class Application
 {
     private $error;
     private $config;
+
+    /** @var MainFactory */
     private $mainFactory;
+
+    /** @var Request */
     private $request;
+
+    /** @var Response */
     private $response;
+
+    /** @var ServerInfo */
     private $serverInfo;
+
+    /** @var Logger */
     private $logger;
+
+    /** @var  Session */
     private $session;
+
+    /** @var  BaseModule */
     private $module;
+
+    /** @var  BaseModule */
     private $menuModule;
+
+    /** @var  BaseModule */
     private $footerModule;
 
     public function __construct()
@@ -175,7 +196,7 @@ class Application
     {
         // create the databases if needed
         $useDatabase = $this->config->getConfig('database', 'use_database', true);
-        $databases   = array();
+        $databases   = [];
 
         if ($useDatabase) {
             $databaseFactory = new DatabaseFactory($this->logger);

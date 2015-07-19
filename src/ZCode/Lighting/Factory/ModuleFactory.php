@@ -11,30 +11,41 @@
 
 namespace ZCode\Lighting\Factory;
 
+use ZCode\Lighting\Database\DatabaseProvider;
+use ZCode\Lighting\Http\Request;
+use ZCode\Lighting\Http\ServerInfo;
+use ZCode\Lighting\Session\Session;
+
 class ModuleFactory extends BaseFactory
 {
-    const MODULE      = 0;
+    const MODULE = 0;
 
+    /** @var  Request Request object*/
     public $request;
+
+    /** @var  Session Session object */
     public $session;
+
+    /** @var  ServerInfo ServerInfo object*/
     public $serverInfo;
+
     public $ajax;
+
+    /** @var  DatabaseProvider[] Array of databases created from the configuration file. */
     public $databases;
 
     protected function init()
     {
-        $this->classArray = array(
-            'Module\BaseModule'
-        );
+        $this->classArray = ['Module\BaseModule'];
     }
 
     protected function additionalSetup($object)
     {
-        $object->request          = $this->request;
-        $object->session          = $this->session;
-        $object->serverInfo       = $this->serverInfo;
-        $object->ajax             = $this->ajax;
-        $object->databases        = $this->databases;
+        $object->request    = $this->request;
+        $object->session    = $this->session;
+        $object->serverInfo = $this->serverInfo;
+        $object->ajax       = $this->ajax;
+        $object->databases  = $this->databases;
 
         return $object;
     }
