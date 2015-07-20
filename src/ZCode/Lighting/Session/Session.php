@@ -42,7 +42,7 @@ class Session extends BaseObject
             return $data;
         }
 
-        if  (isset($_SESSION[$name])) {
+        if (isset($_SESSION[$name])) {
             $data = $_SESSION[$name];
             return $data;
         }

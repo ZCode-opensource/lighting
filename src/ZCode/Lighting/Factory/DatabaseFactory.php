@@ -24,7 +24,7 @@ class DatabaseFactory extends BaseFactory
 
     protected function init()
     {
-        $this->classArray = ['Database\MysqlProvider'];
+        $this->classArray = ['Database\Mysql\MysqlProvider'];
     }
 
     protected function additionalSetup($object)

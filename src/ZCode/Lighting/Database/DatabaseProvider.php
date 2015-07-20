@@ -24,15 +24,7 @@ abstract class DatabaseProvider extends BaseObject
     protected $query;
     protected $numRows;
 
-    abstract public function connect();
     abstract protected function disconnect();
-    abstract public function setQuery($query);
-    abstract public function executeQuery();
-    abstract public function loadField($field);
-    abstract public function loadObject($object = null);
-    abstract public function loadObjectList();
-    abstract public function insertRow($table, $data, $types);
-    abstract public function updateRow($table, $data, $type, $key);
 
     public function __destruct()
     {

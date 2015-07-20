@@ -62,7 +62,8 @@ class BaseView extends BaseObject
         return $widget;
     }
 
-    protected function generateSelectOptions($items, $itemId) {
+    protected function generateSelectOptions($items, $itemId)
+    {
         $options = '';
 
         if ($items) {

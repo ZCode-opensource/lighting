@@ -49,5 +49,5 @@ class MainFactory extends BaseFactory
 
         return $object;
     }
-
 }
+
