@@ -57,6 +57,46 @@ class Request extends BaseObject
         return $value;
     }
 
+    public function unsetVar($name)
+    {
+        unset($this->getVars[$name]);
+        unset($this->postVars[$name]);
+    }
+
+    public function getObject($object, $method)
+    {
+        if ($method !== null && strlen($method) > 2 && strlen($method) < 5) {
+            switch ($method) {
+                case 'get':
+                    $object = $this->fillObject($object, $this->getVars);
+                    break;
+                case 'post':
+                    $object = $this->fillObject($object, $this->postVars);
+                    break;
+            }
+
+            return $object;
+        }
+
+        return null;
+    }
+
+    public function fillObject($object, $vars)
+    {
+        $keys    = array_keys($vars);
+        $numKeys = sizeof($keys);
+
+        for ($i = 0; $i < $numKeys; $i++) {
+            $method = 'set'.ucfirst($keys[$i]);
+
+            if (method_exists($object, $method)) {
+                call_user_func(array($object, $method), $vars[$keys[$i]]);
+            }
+        }
+
+        return $object;
+    }
+
     public function getVar($name, $type)
     {
         $value = $this->getGetVar($name, $type);

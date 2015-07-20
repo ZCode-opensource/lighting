@@ -214,7 +214,7 @@ abstract class BaseController extends BaseObject
         }
     }
 
-    protected function generateJsonResponse($success, $message, $data)
+    protected function generateJsonResponse($success, $message, $data = null)
     {
         $jsonArray = ['success' => $success, 'message' => $message];
 

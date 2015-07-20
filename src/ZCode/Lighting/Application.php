@@ -124,6 +124,7 @@ class Application
 
         $this->serverInfo->setData(ServerInfo::MODULE, $module);
         $ajax = $this->request->getVar('ajax', Request::BOOLEAN);
+        $this->request->unsetVar('ajax');
 
         if ($ajax) {
             $xdebug = 0;
