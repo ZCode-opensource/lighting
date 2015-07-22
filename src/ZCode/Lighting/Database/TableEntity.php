@@ -73,21 +73,19 @@ class TableEntity
         $properties = get_object_vars($this);
 
         foreach ($properties as $property => $value) {
-            if ($value !== null) {
-                $propertyFound = false;
+            $propertyFound = false;
 
-                for ($i = 0; $i < 5; $i++) {
-                    if ($property === self::$reserved[$i]) {
-                        $propertyFound = true;
-                        break;
-                    }
+            for ($i = 0; $i < 5; $i++) {
+                if ($property === self::$reserved[$i]) {
+                    $propertyFound = true;
+                    break;
                 }
+            }
 
-                if (!$propertyFound && $property !== $this->primaryKey) {
-                    call_user_func($function, $property);
-                    $this->types     .= $this->getVarType($value);
-                    $this->values[]   = &$this->$property;
-                }
+            if (!$propertyFound && $property !== $this->primaryKey) {
+                call_user_func($function, $property);
+                $this->types     .= $this->getVarType($value);
+                $this->values[]   = &$this->$property;
             }
         }
     }
@@ -119,6 +117,9 @@ class TableEntity
                 $type = 'i';
                 break;
             case 'string':
+                $type = 's';
+                break;
+            case 'NULL':
                 $type = 's';
                 break;
         }
