@@ -22,6 +22,8 @@ class MainFactory extends BaseFactory
     const RESPONSE = 1;
     const SERVER_INFO = 2;
     const SESSION = 3;
+    const MODULE_FACTORY = 4;
+    const TEMPLATE_FACTORY = 5;
 
     protected function init()
     {
@@ -29,7 +31,9 @@ class MainFactory extends BaseFactory
             'Http\Request',
             'Http\Response',
             'Http\ServerInfo',
-            'Session\Session'
+            'Session\Session',
+            'Factory\ModuleFactory',
+            'Factory\TemplateFactory'
         ];
     }
 
@@ -37,9 +41,9 @@ class MainFactory extends BaseFactory
      * @SuppressWarnings(PHPMD.Superglobals)
      * @SuppressWarnings(PHPMD.CamelCaseVariableName)
      *
-     * @param Request|Response|ServerInfo|Session $object
+     * @param Request|Response|ServerInfo|Session|ModuleFactory|TemplateFactory $object
      *
-     * @return Request|Response|ServerInfo|Session
+     * @return Request|Response|ServerInfo|Session|ModuleFactory|TemplateFactory
      */
     protected function additionalSetup($object)
     {
@@ -48,5 +52,10 @@ class MainFactory extends BaseFactory
         }
 
         return $object;
+    }
+
+    public function getLogger()
+    {
+        return $this->logger;
     }
 }

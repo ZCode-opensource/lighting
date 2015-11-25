@@ -18,12 +18,12 @@ use ZCode\Lighting\Factory\MainFactory;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use ZCode\Lighting\Factory\ModuleFactory;
+use ZCode\Lighting\Factory\TemplateFactory;
 use ZCode\Lighting\Http\Request;
 use ZCode\Lighting\Http\Response;
 use ZCode\Lighting\Http\ServerInfo;
 use ZCode\Lighting\Module\BaseModule;
 use ZCode\Lighting\Session\Session;
-use ZCode\Lighting\Template\Template;
 
 class Application
 {
@@ -57,15 +57,18 @@ class Application
     /** @var  BaseModule */
     private $footerModule;
 
-    public function __construct()
+    public function __construct($configFile, $mainFactory)
     {
-        $this->error      = true;
-        $this->config     = new Configuration('framework.conf');
-        
-        $this->logger   = new Logger('Main');
-        $logLevel       = $this->getLogLevel();
-        
-        $this->logger->pushHandler(new StreamHandler('app.log', $logLevel));
+        $this->error  = true;
+        $this->config = new Configuration($configFile);
+
+        $this->mainFactory   = $mainFactory;
+        $this->logger        = $this->mainFactory->getLogger();
+        $logLevel            = $this->getLogLevel();
+
+        if ($this->logger !== null) {
+            $this->logger->pushHandler(new StreamHandler('app.log', $logLevel));
+        }
 
         if ($this->config->error) {
             // TODO: Make an error showing system
@@ -75,8 +78,6 @@ class Application
 
         $displayErrors = $this->getDisplayErrors();
         ini_set('display_errors', $displayErrors);
-
-        $this->mainFactory = new MainFactory($this->logger);
 
         $this->request    = $this->mainFactory->create(MainFactory::REQUEST);
         $this->response   = $this->mainFactory->create(MainFactory::RESPONSE);
@@ -228,7 +229,7 @@ class Application
             }
         }
 
-        $moduleFactory             = new ModuleFactory($this->logger);
+        $moduleFactory = $this->mainFactory->create(MainFactory::MODULE_FACTORY);
         $moduleFactory->databases  = $databases;
         $moduleFactory->request    = $this->request;
         $moduleFactory->serverInfo = $this->serverInfo;
@@ -274,17 +275,24 @@ class Application
 
         $baseUrl = $this->serverInfo->getData(ServerInfo::BASE_URL);
 
-        $tmpl = new Template($this->logger);
+        /** @var TemplateFactory $templateFactory */
+        $templateFactory = $this->mainFactory->create(MainFactory::TEMPLATE_FACTORY);
+        $tmpl = $templateFactory->create(TemplateFactory::TEMPLATE);
         $tmpl->loadTemplate('main', 'resources/html');
 
         $pageTitle = $this->config->getConfig('site', 'page_title', false);
         $tmpl->addSearchReplace('{#PAGE_TITLE#}', $pageTitle);
 
+        $cssString = '';
+        $jsString  = '';
+
         // Generate Menu
         $menu = '';
 
         if ($this->menuModule) {
-            $menu = $this->menuModule->getResponse();
+            $menu      = $this->menuModule->getResponse();
+            $cssString = $this->processModuleCss($this->menuModule->moduleCssList);
+            $jsString  = $this->processModuleJs($this->menuModule->moduleJsList);
         }
 
         $tmpl->addSearchReplace('{#MENU#}', $menu);
@@ -293,7 +301,9 @@ class Application
         $footer = '';
 
         if ($this->footerModule) {
-            $footer = $this->footerModule->getResponse();
+            $footer     = $this->footerModule->getResponse();
+            $cssString .= $this->processModuleCss($this->footerModule->moduleCssList);
+            $jsString  .= $this->processModuleJs($this->footerModule->moduleJsList);
         }
 
         $tmpl->addSearchReplace('{#FOOTER#}', $footer);
@@ -301,10 +311,10 @@ class Application
         $tmpl->addSearchReplace('{#MODULE#}', $response);
         $tmpl->addSearchReplace('{#BASE_URL#}', $baseUrl);
 
-        $cssString = $this->processModuleCss($this->module->moduleCssList);
+        $cssString .= $this->processModuleCss($this->module->moduleCssList);
         $tmpl->addSearchReplace('{#CSS#}', $cssString);
 
-        $jsString = $this->processModuleJs($this->module->moduleJsList);
+        $jsString .= $this->processModuleJs($this->module->moduleJsList);
         $tmpl->addSearchReplace('{#JS#}', $jsString);
 
         $this->response->html($tmpl->getHtml());
