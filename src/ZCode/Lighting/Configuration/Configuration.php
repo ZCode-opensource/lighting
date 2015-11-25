@@ -29,23 +29,29 @@ class Configuration
             return;
         }
 
-        if ($this->data = parse_ini_file($file, true)) {
+        $data = parse_ini_file($file, true);
+        if ($data) {
             // TODO: set in some way a loaded state so the framework knows the file loaded
-            return;
+            $this->data = $data;
         }
     }
 
-    public function getConfig($section, $field, $boolean)
+    public function getConfig($section, $field, $boolean = false)
     {
-        $this->section = $section;
-        $this->field   = $field;
+        $data = null;
 
-        if ($boolean) {
-            $data = $this->getBoolean();
-            return $data;
+        if (isset($this->data[$section])) {
+            $this->section = $section;
+            $this->field   = $field;
+
+            if ($boolean) {
+                $data = $this->getBoolean();
+                return $data;
+            }
+
+            $data = $this->getText();
         }
 
-        $data = $this->getText();
         return $data;
     }
 
