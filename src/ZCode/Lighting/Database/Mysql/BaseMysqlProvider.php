@@ -21,6 +21,10 @@ class BaseMysqlProvider extends DatabaseProvider
     public function connect()
     {
         $this->mysqli = new \mysqli($this->server, $this->user, $this->password, $this->database);
+
+        if ($this->forceCharset && strlen($this->charset) > 0) {
+            $this->mysqli->set_charset($this->charset);
+        }
     }
 
     protected function disconnect()

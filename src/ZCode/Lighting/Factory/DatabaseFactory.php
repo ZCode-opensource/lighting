@@ -11,6 +11,8 @@
 
 namespace ZCode\Lighting\Factory;
 
+use ZCode\Lighting\Database\DatabaseProvider;
+
 class DatabaseFactory extends BaseFactory
 {
     const MYSQL  = 0;
@@ -18,6 +20,8 @@ class DatabaseFactory extends BaseFactory
     public $server;
     public $user;
     public $password;
+    public $forceCharset;
+    public $charset;
 
     /** @var  DatabaseProvider Database object. */
     public $database;
@@ -29,10 +33,12 @@ class DatabaseFactory extends BaseFactory
 
     protected function additionalSetup($object)
     {
-        $object->server   = $this->server;
-        $object->user     = $this->user;
-        $object->password = $this->password;
-        $object->database = $this->database;
+        $object->server       = $this->server;
+        $object->user         = $this->user;
+        $object->password     = $this->password;
+        $object->database     = $this->database;
+        $object->forceCharset = $this->forceCharset;
+        $object->charset      = $this->charset;
 
         return $object;
     }

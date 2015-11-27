@@ -218,11 +218,13 @@ class Application
                 }
 
                 if ($dbType !== null) {
-                    $connectionName            = $this->config->getConfig($dbSection, 'name', false);
-                    $databaseFactory->server   = $this->config->getConfig($dbSection, 'server', false);
-                    $databaseFactory->user     = $this->config->getConfig($dbSection, 'user', false);
-                    $databaseFactory->password = $this->config->getConfig($dbSection, 'password', false);
-                    $databaseFactory->database = $this->config->getConfig($dbSection, 'database', false);
+                    $connectionName                = $this->config->getConfig($dbSection, 'name');
+                    $databaseFactory->server       = $this->config->getConfig($dbSection, 'server');
+                    $databaseFactory->user         = $this->config->getConfig($dbSection, 'user');
+                    $databaseFactory->password     = $this->config->getConfig($dbSection, 'password');
+                    $databaseFactory->database     = $this->config->getConfig($dbSection, 'database');
+                    $databaseFactory->forceCharset = $this->config->getConfig($dbSection, 'force_charset', true);
+                    $databaseFactory->charset      = $this->config->getConfig($dbSection, 'charset');
 
                     $databases[$connectionName] = $databaseFactory->create($dbType);
                 }
