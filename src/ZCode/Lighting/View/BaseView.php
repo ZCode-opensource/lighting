@@ -13,6 +13,7 @@ namespace ZCode\Lighting\View;
 
 use ZCode\Lighting\Http\ServerInfo;
 use ZCode\Lighting\Object\BaseObject;
+use ZCode\Lighting\Template\Template;
 
 class BaseView extends BaseObject
 {
@@ -50,6 +51,10 @@ class BaseView extends BaseObject
         call_user_func($this->addJsFunction, $baseUrl.'resources/js/'.$file);
     }
 
+    /**
+     * @param $filename
+     * @return Template
+     */
     protected function loadTemplate($filename)
     {
         $tmpl = call_user_func($this->templateFunction, $filename, $this->resourcePath.'html');
