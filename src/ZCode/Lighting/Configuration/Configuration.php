@@ -57,7 +57,11 @@ class Configuration
 
     private function getText()
     {
-        $text = $this->data[$this->section][$this->field];
+        $text = null;
+
+        if (isset($this->data[$this->section][$this->field])) {
+            $text = $this->data[$this->section][$this->field];
+        }
 
         return $text;
     }
@@ -65,10 +69,13 @@ class Configuration
     private function getBoolean()
     {
         $boolean = false;
-        $tmp = intval($this->data[$this->section][$this->field]);
 
-        if ($tmp == 1) {
-            $boolean = true;
+        if (isset($this->data[$this->section][$this->field])) {
+            $tmp = intval($this->data[$this->section][$this->field]);
+
+            if ($tmp === 1) {
+                $boolean = true;
+            }
         }
 
         return $boolean;
