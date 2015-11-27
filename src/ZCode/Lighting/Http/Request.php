@@ -90,7 +90,7 @@ class Request extends BaseObject
             $method = 'set'.ucfirst($keys[$i]);
 
             if (method_exists($object, $method)) {
-                call_user_func(array($object, $method), $vars[$keys[$i]]);
+                call_user_func([$object, $method], $vars[$keys[$i]]);
             }
         }
 
@@ -154,6 +154,12 @@ class Request extends BaseObject
 
         if ($internalPath) {
             $module = $this->strReplaceFirst($path, '', $module);
+        }
+
+        $index = strpos($module, '?');
+
+        if ($index > 0) {
+            $module = substr($module, 0, $index);
         }
 
         if (substr($module, 0, 1) === '/') {
