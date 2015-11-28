@@ -34,6 +34,9 @@ abstract class BaseFactory extends BaseObject
     protected function createObject($type)
     {
         $class  = $this->getClass($type);
+
+        $this->logger->addDebug('Creating object: '.$this->classArray[$type]);
+
         $classR = new \ReflectionClass($class);
         $object = $classR->newInstance($this->logger);
         $object = $this->additionalSetup($object);

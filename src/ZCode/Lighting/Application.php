@@ -16,7 +16,6 @@ use ZCode\Lighting\Factory\DatabaseFactory;
 use ZCode\Lighting\Factory\MainFactory;
 
 use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
 use ZCode\Lighting\Factory\ModuleFactory;
 use ZCode\Lighting\Factory\TemplateFactory;
 use ZCode\Lighting\Http\Request;
@@ -28,6 +27,8 @@ use ZCode\Lighting\Session\Session;
 class Application
 {
     private $error;
+
+    /** @var  Configuration */
     private $config;
 
     /** @var MainFactory */
@@ -57,18 +58,16 @@ class Application
     /** @var  BaseModule */
     private $footerModule;
 
-    public function __construct($configFile, $mainFactory)
+    public function __construct($mainFactory)
     {
         $this->error  = true;
-        $this->config = new Configuration($configFile);
 
-        $this->mainFactory   = $mainFactory;
-        $this->logger        = $this->mainFactory->getLogger();
-        $logLevel            = $this->getLogLevel();
+        $this->mainFactory = $mainFactory;
+        $this->config      = $this->mainFactory->getConfiguration();
+        $this->logger      = $this->mainFactory->getLogger();
 
-        if ($this->logger !== null) {
-            $this->logger->pushHandler(new StreamHandler('app.log', $logLevel));
-        }
+        $this->logger->addInfo('Logger initialized.');
+        $this->logger->addInfo('Initializing application.');
 
         if ($this->config->error) {
             // TODO: Make an error showing system
@@ -77,6 +76,7 @@ class Application
         }
 
         $displayErrors = $this->getDisplayErrors();
+        $this->logger->addDebug('Setting PHP diplay errors to: '.$displayErrors);
         ini_set('display_errors', $displayErrors);
 
         $this->request    = $this->mainFactory->create(MainFactory::REQUEST);
@@ -168,13 +168,6 @@ class Application
         }
 
         return false;
-    }
-
-    private function getLogLevel()
-    {
-        $logLevelValue = Logger::DEBUG;
-
-        return $logLevelValue;
     }
 
     private function getDisplayErrors()
