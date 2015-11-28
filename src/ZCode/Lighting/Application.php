@@ -26,6 +26,7 @@ use ZCode\Lighting\Session\Session;
 
 class Application
 {
+    /** @var bool */
     private $error;
 
     /** @var  Configuration */
@@ -52,6 +53,9 @@ class Application
     /** @var  BaseModule */
     private $module;
 
+    /** @var  string */
+    private $errorModule;
+
     /** @var  BaseModule */
     private $menuModule;
 
@@ -60,7 +64,7 @@ class Application
 
     public function __construct($mainFactory)
     {
-        $this->error  = true;
+        $this->error = true;
 
         $this->mainFactory = $mainFactory;
         $this->config      = $this->mainFactory->getConfiguration();
@@ -76,6 +80,8 @@ class Application
         }
 
         $displayErrors = $this->getDisplayErrors();
+
+        return;
         $this->logger->addDebug('Setting PHP diplay errors to: '.$displayErrors);
         ini_set('display_errors', $displayErrors);
 
@@ -92,6 +98,19 @@ class Application
         if ($this->config->error) {
             echo 'System error, please see web server log for more details.';
             throw new \Exception("Couldn't load configuration file");
+        }
+
+        $defaultModule = $this->config->getConfig('application', 'default_module', false);
+
+        if ($defaultModule === null || strlen($defaultModule) === 0) {
+            $this->logger->addError('Default module not found in configuration file.');
+            throw new \Exception('Default module not found in configuration file.');
+        }
+
+        $this->errorModule = $this->config->getConfig('application', 'error_module', false);
+
+        if ($this->errorModule === null || strlen($this->errorModule) === 0) {
+            $this->errorModule = $defaultModule;
         }
 
         $this->session = $this->mainFactory->create(MainFactory::SESSION);
@@ -113,7 +132,7 @@ class Application
         }
 
         if (!$module) {
-            $module = $this->config->getConfig('application', 'default_module', false);
+            $module = $defaultModule;
         }
 
         // Auth section
@@ -159,7 +178,7 @@ class Application
             }
         }
 
-        $modules = explode(',', $authModules);
+        $modules    = explode(',', $authModules);
         $numModules = sizeof($modules);
 
         if ($numModules > 0) {
@@ -224,12 +243,13 @@ class Application
             }
         }
 
+        /** @var ModuleFactory $moduleFactory */
         $moduleFactory = $this->mainFactory->create(MainFactory::MODULE_FACTORY);
-        $moduleFactory->databases  = $databases;
-        $moduleFactory->request    = $this->request;
-        $moduleFactory->serverInfo = $this->serverInfo;
-        $moduleFactory->session    = $this->session;
-        $moduleFactory->ajax       = $ajax;
+        $moduleFactory->databases   = $databases;
+        $moduleFactory->request     = $this->request;
+        $moduleFactory->serverInfo  = $this->serverInfo;
+        $moduleFactory->session     = $this->session;
+        $moduleFactory->ajax        = $ajax;
 
         $this->serverInfo->setData(
             ServerInfo::PROJECT_NAMESPACE,
@@ -238,7 +258,7 @@ class Application
 
         $this->module = $moduleFactory->create(ModuleFactory::MODULE);
         $this->module->setModuleName($module);
-        $response = $this->module->getResponse();
+        $response = $this->module->getResponse($this->errorModule);
 
         // Generate menu module if needed
         $generateMenu = $this->config->getConfig('menu', 'generate_menu', true);
@@ -285,7 +305,7 @@ class Application
         $menu = '';
 
         if ($this->menuModule) {
-            $menu      = $this->menuModule->getResponse();
+            $menu      = $this->menuModule->getResponse($this->errorModule);
             $cssString = $this->processModuleCss($this->menuModule->moduleCssList);
             $jsString  = $this->processModuleJs($this->menuModule->moduleJsList);
         }
@@ -296,7 +316,7 @@ class Application
         $footer = '';
 
         if ($this->footerModule) {
-            $footer     = $this->footerModule->getResponse();
+            $footer     = $this->footerModule->getResponse($this->errorModule);
             $cssString .= $this->processModuleCss($this->footerModule->moduleCssList);
             $jsString  .= $this->processModuleJs($this->footerModule->moduleJsList);
         }
