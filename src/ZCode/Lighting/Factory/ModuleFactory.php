@@ -29,6 +29,7 @@ class ModuleFactory extends BaseFactory
     /** @var  ServerInfo ServerInfo object*/
     public $serverInfo;
 
+    /** @var  boolean */
     public $ajax;
 
     /** @var  DatabaseProvider[] Array of databases created from the configuration file. */

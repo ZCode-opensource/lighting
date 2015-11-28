@@ -28,6 +28,7 @@ class MainFactory extends BaseFactory
     const MODULE_FACTORY = 4;
     const TEMPLATE_FACTORY = 5;
 
+    /** @var  Configuration */
     private $config;
 
     protected function init()

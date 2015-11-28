@@ -11,44 +11,75 @@
 
 namespace ZCode\Lighting\Module;
 
+use ZCode\Lighting\Controller\BaseController;
+use ZCode\Lighting\Http\Request;
 use ZCode\Lighting\Http\ServerInfo;
 use ZCode\Lighting\Object\BaseObject;
+use ZCode\Lighting\Session\Session;
 
 class BaseModule extends BaseObject
 {
+    /** @var  string */
     public $moduleName;
+
+    /** @var  array */
     public $databases;
+
+    /** @var  Request */
     public $request;
+
+    /** @var  Session */
     public $session;
+
+    /** @var  ServerInfo */
     public $serverInfo;
+
+    /** @var  boolean */
     public $ajax;
+
+    /** @var  array */
     public $moduleCssList;
+
+    /** @var  array */
     public $moduleJsList;
 
+    /** @var  BaseController */
     private $controller;
+
+    /** @var  string */
     private $resourcePath;
 
     public function setModuleName($name)
     {
         $this->moduleName = $name;
-        $this->moduleCssList = array();
-        $this->moduleJsList = array();
+        $this->moduleCssList = [];
+        $this->moduleJsList = [];
     }
 
-    private function moduleInit()
+    private function moduleInit($errorModule)
     {
         $projectNameSpace = $this->serverInfo->getData(ServerInfo::PROJECT_NAMESPACE);
-        $class            = $projectNameSpace.'\Modules\\'.$this->moduleName.'\\'.$this->moduleName.'Controller';
 
-        try {
-            $rClass = new \ReflectionClass($class);
-        } catch (\ReflectionException $ex) {
-            // TODO: Generate error
-            $rClass = null;
+        // Load module
+        $moduleLoaded = $this->moduleName;
+        $rClass       = $this->getModuleClass($this->moduleName, $projectNameSpace);
+
+        // If null, load error module (that could also be the default module)
+        if ($rClass === null) {
+            $this->logger->addDebug('Trying to load error module: '.$errorModule);
+            $rClass       = $this->getModuleClass($errorModule, $projectNameSpace);
+            $moduleLoaded = $errorModule;
         }
 
+        // If still null, return false
+        if ($rClass === null) {
+            return false;
+        }
+
+        $this->logger->addDebug('Module loaded: '.$moduleLoaded);
+
         $this->resourcePath  = 'src/'.str_replace('\\', '/', $projectNameSpace);
-        $this->resourcePath .= '/Modules/'.$this->moduleName.'/resources/';
+        $this->resourcePath .= '/Modules/'.$moduleLoaded.'/resources/';
 
         $this->controller                   = $rClass->newInstance($this->logger);
         $this->controller->databases        = $this->databases;
@@ -56,12 +87,32 @@ class BaseModule extends BaseObject
         $this->controller->serverInfo       = $this->serverInfo;
         $this->controller->session          = $this->session;
         $this->controller->resourcePath     = $this->resourcePath;
-        $this->controller->moduleName       = $this->moduleName;
+        $this->controller->moduleName       = $moduleLoaded;
+
+        return true;
     }
 
-    public function getResponse()
+    private function getModuleClass($module, $projectNameSpace)
     {
-        $this->moduleInit();
+        $this->logger->debug('Loading module: '.$module);
+        $class = $projectNameSpace.'\Modules\\'.$module.'\\'.$module.'Controller';
+
+        try {
+            $rClass = new \ReflectionClass($class);
+        } catch (\ReflectionException $ex) {
+            $this->logger->addError('Failed to load module: '.$module);
+            $rClass = null;
+        }
+
+        return $rClass;
+    }
+
+    public function getResponse($errorModule)
+    {
+        if (!$this->moduleInit($errorModule)) {
+            $this->logger->addError('Could not load any module.');
+            return '';
+        }
 
         if ($this->ajax) {
             $this->controller->runAjax();
