@@ -30,7 +30,7 @@ class ServerInfo extends BaseObject
 
     protected function init()
     {
-        $this->data = array();
+        $this->data = [];
     }
 
     public function setRelativePath($path)
