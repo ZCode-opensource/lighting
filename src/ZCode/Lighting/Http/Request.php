@@ -168,7 +168,7 @@ class Request extends BaseObject
             $module = $this->urlVars[0];
         }
 
-        if (strlen($module) == 0) {
+        if (strlen($module) === 0) {
             return false;
         }
 

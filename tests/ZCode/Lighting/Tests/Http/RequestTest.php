@@ -40,17 +40,17 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $post = [
             'postTestTrue' => 'true',
             'postTestFalse' => 'false',
-            'postExclusive' => '1'
+            'postExclusive' => '1',
+            'unsetMe' => 'string'
         ];
 
         $this->request = new Request(null);
-        $this->request->initializeRequest($post, $get, '/lighting/home/1');
+        $this->request->initializeRequest($post, $get, '/lighting/home/1?getVar=get');
     }
 
     /**
      * @covers ::getModule
      * @covers ::strReplaceFirst
-     *
      */
     public function testGetModule()
     {
@@ -58,7 +58,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('home', $this->request->getModule(true, '/lighting'));
 
         // No module in URL, must return false
-        $this->assertFalse($this->request->getModule(true, '/lighting/home/1'));
+        $this->assertFalse($this->request->getModule(true, '/lighting/home/1?getVar=get'));
     }
 
     /**
@@ -157,5 +157,42 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         // $_POST['postExclusive'] equals 1, must return 1
         $this->assertEquals(true, $this->request->getVar('postExclusive', Request::INTEGER));
+    }
+
+    /**
+     * @covers ::unsetVar
+     * @covers ::getPostVar
+     */
+    public function testUnsetVar()
+    {
+        $this->request->unsetVar('unsetMe');
+        $this->assertNull($this->request->getPostVar('unsetMe', Request::STRING));
+    }
+
+    /**
+     * @covers ::getObject
+     * @covers ::fillObject
+     */
+    public function testGetObject()
+    {
+        $testObject = new \stdClass();
+        $object     = new \stdClass();
+        $this->request->getObject($object, 'get');
+
+        $this->assertEquals($testObject, $object);
+        $this->assertNull($this->request->getObject($object, ''));
+
+        $object = $this->getMockBuilder('stdClass')->setMethods(
+            ['setPostTestTrue', 'setPostTestFalse', 'setPostExclusive', 'setUnsetMe', 'setDontCallMe']
+        )->getMock();
+
+        $object->expects($this->exactly(1))->method('setPostTestTrue')->with($this->equalTo('true'));
+        $object->expects($this->exactly(1))->method('setPostTestFalse')->with($this->equalTo('false'));
+        $object->expects($this->exactly(1))->method('setPostExclusive')->with($this->equalTo('1'));
+        $object->expects($this->exactly(1))->method('setUnsetMe')->with($this->equalTo('string'));
+        $object->expects($this->exactly(0))->method('setDontCallMe')->with($this->any());
+
+        $this->request->getObject($object, 'post');
+
     }
 }
