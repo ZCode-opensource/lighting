@@ -80,8 +80,6 @@ class Application
         }
 
         $displayErrors = $this->getDisplayErrors();
-
-        return;
         $this->logger->addDebug('Setting PHP diplay errors to: '.$displayErrors);
         ini_set('display_errors', $displayErrors);
 
