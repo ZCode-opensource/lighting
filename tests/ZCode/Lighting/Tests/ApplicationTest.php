@@ -62,6 +62,9 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
     /** @var  \PHPUnit_Framework_MockObject_MockObject */
     private $mockTmpl;
 
+    /** @var  \PHPUnit_Framework_MockObject_MockObject */
+    private $mockCfg;
+
     private $map;
 
     public function setUp()
@@ -84,7 +87,8 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         $this->mockTmpl = $this->getMockBuilder('ZCode\Lighting\Template\Template')->disableOriginalConstructor()
             ->getMock();
-
+        $this->mockCfg  = $this->getMockBuilder('ZCode\Lighting\Configuration\Configuration')
+            ->disableOriginalConstructor()->getMock();
         $this->logger = $this->getMockBuilder('Monolog\Logger')->disableOriginalConstructor()->getMock();
 
         $this->mockTmplFactory->method('create')->willReturn($this->mockTmpl);
@@ -104,17 +108,7 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
 
         $this->mockFactory->method('getLogger')->willReturn($this->logger);
         $this->mockFactory->method('create')->will($this->returnValueMap($this->map));
-    }
-
-    /**
-     * @covers ::__construct
-     * @uses \ZCode\Lighting\Application::getLogLevel
-     */
-    public function testConfigurationError()
-    {
-        $this->logger->expects($this->exactly(1))->method('addError')->with("Couldn't load configuration file");
-        $this->populateFactory();
-        $this->app = new Application('error.conf', $this->mockFactory);
+        $this->mockFactory->method('getConfiguration')->willReturn($this->mockCfg);
     }
 
     /**
@@ -125,7 +119,6 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
      * @covers ::processModuleCss
      * @covers ::processModuleJs
      * @uses \ZCode\Lighting\Application::validateAuth
-     * @uses \ZCode\Lighting\Application::getLogLevel
      * @uses \ZCode\Lighting\Application::getDisplayErrors
      */
     public function testRender()
@@ -139,7 +132,7 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
 
         $this->populateFactory();
 
-        $this->app = new Application('framework-dist.conf', $this->mockFactory);
+        $this->app = new Application($this->mockFactory);
         $this->app->render();
     }
 

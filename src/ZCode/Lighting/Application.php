@@ -89,6 +89,11 @@ class Application
 
     public function render()
     {
+        if ($this->config->error) {
+            echo 'System error, please see web server log for more details.';
+            throw new \Exception("Couldn't load configuration file");
+        }
+
         $this->session = $this->mainFactory->create(MainFactory::SESSION);
         $module        = $this->request->getPostVar('module', Request::STRING);
 
@@ -172,13 +177,8 @@ class Application
 
     private function getDisplayErrors()
     {
-        $displayErrors = $this->config->getConfig(
-            'application',
-            'show_errors',
-            true
-        );
-
-        $errorVar = '0';
+        $displayErrors = $this->config->getConfig('application', 'show_errors', true);
+        $errorVar      = '0';
 
         if ($displayErrors) {
             $errorVar = '1';
