@@ -145,7 +145,7 @@ abstract class BaseController extends BaseObject
         return $controller;
     }
 
-    private function seedModel(BaseModel $model)
+    private function seedModel($model)
     {
         if ($model) {
             $model->setDatabases($this->databases);
