@@ -38,6 +38,9 @@ class ModuleFactory extends BaseFactory
     /** @var  ProjectFactory Factory for the internal objects of the controller */
     public $projectFactory;
 
+    /** @var  WidgetFactory Factory for creating widgets */
+    public $widgetFactory;
+
     protected function init()
     {
         $this->classArray = ['Module\BaseModule'];
@@ -51,6 +54,7 @@ class ModuleFactory extends BaseFactory
         $object->ajax           = $this->ajax;
         $object->databases      = $this->databases;
         $object->projectFactory = $this->projectFactory;
+        $object->widgetFactory  = $this->widgetFactory;
 
         return $object;
     }

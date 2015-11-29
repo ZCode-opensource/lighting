@@ -19,6 +19,7 @@ use Monolog\Logger;
 use ZCode\Lighting\Factory\ModuleFactory;
 use ZCode\Lighting\Factory\ProjectFactory;
 use ZCode\Lighting\Factory\TemplateFactory;
+use ZCode\Lighting\Factory\WidgetFactory;
 use ZCode\Lighting\Http\Request;
 use ZCode\Lighting\Http\Response;
 use ZCode\Lighting\Http\ServerInfo;
@@ -245,12 +246,14 @@ class Application
         /** @var ModuleFactory $moduleFactory */
         $moduleFactory  = $this->mainFactory->create(MainFactory::MODULE_FACTORY);
         $projectFactory = new ProjectFactory($this->logger);
+        $widgetFactory  = new WidgetFactory($this->logger);
 
         $moduleFactory->databases      = $databases;
         $moduleFactory->request        = $this->request;
         $moduleFactory->serverInfo     = $this->serverInfo;
         $moduleFactory->session        = $this->session;
         $moduleFactory->projectFactory = $projectFactory;
+        $moduleFactory->widgetFactory  = $widgetFactory;
         $moduleFactory->ajax           = $ajax;
 
         $this->serverInfo->setData(

@@ -39,6 +39,9 @@ abstract class BaseController extends BaseObject
     /** @var  ProjectFactory Factory for the internal objects of the controller */
     public $projectFactory;
 
+    /** @var  WidgetFactory Factory for creating widgets */
+    public $widgetFactory;
+
     /** @var  DatabaseProvider[] Array of databases created from the configuration file. */
     public $databases;
 
@@ -93,45 +96,10 @@ abstract class BaseController extends BaseObject
         return $view;
     }
 
-    public function createWidget($name)
-    {
-        $projectNameSpace = $this->serverInfo->getData(ServerInfo::PROJECT_NAMESPACE);
-        $factory = new WidgetFactory($this->logger);
-
-        $factory->basePath = $projectNameSpace.'\Widgets\\'.$name;
-        $widget            = $factory->create($name);
-
-        $widget->widgetName       = $name;
-        $widget->resourcePath     = 'src/'.str_replace('\\', '/', $factory->basePath).'/resources/';
-        $widget->serverInfo       = $this->serverInfo;
-        $widget->templateFunction = [$this, 'getTemplate'];
-        $widget->addCssFunction   = [$this, 'addPriorityCss'];
-        $widget->addJsFunction    = [$this, 'addPriorityJs'];
-
-        return $widget;
-    }
-
     protected function createModel($name)
     {
         $model = $this->getObject(ProjectFactory::MODEL, $name);
         $model = $this->seedModel($model);
-
-        return $model;
-    }
-
-    protected function createCustomModel($name, $path)
-    {
-        $model = $this->getCustomObject($name, '\\Models\\'.$path);
-        $model = $this->seedModel($model);
-
-        return $model;
-    }
-
-    private function seedModel(BaseModel $model)
-    {
-        if ($model) {
-            $model->setDatabases($this->databases);
-        }
 
         return $model;
     }
@@ -144,12 +112,46 @@ abstract class BaseController extends BaseObject
         return $controller;
     }
 
+    protected function createWidget($name)
+    {
+        $projectNameSpace = $this->serverInfo->getData(ServerInfo::PROJECT_NAMESPACE);
+
+        $this->widgetFactory->basePath = $projectNameSpace.'\Widgets\\'.$name;
+        $widget                        = $this->widgetFactory->create($name);
+
+        $widget->widgetName       = $name;
+        $widget->resourcePath     = 'src/'.str_replace('\\', '/', $this->widgetFactory->basePath).'/resources/';
+        $widget->serverInfo       = $this->serverInfo;
+        $widget->templateFunction = [$this, 'getTemplate'];
+        $widget->addCssFunction   = [$this, 'addPriorityCss'];
+        $widget->addJsFunction    = [$this, 'addPriorityJs'];
+
+        return $widget;
+    }
+
+    protected function createCustomModel($name, $path)
+    {
+        $model = $this->getCustomObject($name, '\\Models\\'.$path);
+        $model = $this->seedModel($model);
+
+        return $model;
+    }
+
     protected function createCustomController($name, $path)
     {
         $controller = $this->getCustomObject($name, '\\Controllers\\'.$path);
         $controller = $this->seedController($controller);
 
         return $controller;
+    }
+
+    private function seedModel(BaseModel $model)
+    {
+        if ($model) {
+            $model->setDatabases($this->databases);
+        }
+
+        return $model;
     }
 
     private function seedController($controller)

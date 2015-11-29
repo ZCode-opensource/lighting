@@ -13,6 +13,7 @@ namespace ZCode\Lighting\Module;
 
 use ZCode\Lighting\Controller\BaseController;
 use ZCode\Lighting\Factory\ProjectFactory;
+use ZCode\Lighting\Factory\WidgetFactory;
 use ZCode\Lighting\Http\Request;
 use ZCode\Lighting\Http\ServerInfo;
 use ZCode\Lighting\Object\BaseObject;
@@ -37,6 +38,9 @@ class BaseModule extends BaseObject
 
     /** @var  ProjectFactory Factory for the internal objects of the controller */
     public $projectFactory;
+
+    /** @var  WidgetFactory Factory for creating widgets */
+    public $widgetFactory;
 
     /** @var  boolean */
     public $ajax;
@@ -85,14 +89,15 @@ class BaseModule extends BaseObject
         $this->resourcePath  = 'src/'.str_replace('\\', '/', $projectNameSpace);
         $this->resourcePath .= '/Modules/'.$moduleLoaded.'/resources/';
 
-        $this->controller                   = $rClass->newInstance($this->logger);
-        $this->controller->databases        = $this->databases;
-        $this->controller->request          = $this->request;
-        $this->controller->serverInfo       = $this->serverInfo;
-        $this->controller->session          = $this->session;
-        $this->controller->resourcePath     = $this->resourcePath;
-        $this->controller->projectFactory   = $this->projectFactory;
-        $this->controller->moduleName       = $moduleLoaded;
+        $this->controller                 = $rClass->newInstance($this->logger);
+        $this->controller->databases      = $this->databases;
+        $this->controller->request        = $this->request;
+        $this->controller->serverInfo     = $this->serverInfo;
+        $this->controller->session        = $this->session;
+        $this->controller->resourcePath   = $this->resourcePath;
+        $this->controller->projectFactory = $this->projectFactory;
+        $this->controller->widgetFactory  = $this->widgetFactory;
+        $this->controller->moduleName     = $moduleLoaded;
 
         return true;
     }
