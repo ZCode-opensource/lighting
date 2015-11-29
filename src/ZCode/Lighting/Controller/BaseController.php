@@ -145,6 +145,10 @@ abstract class BaseController extends BaseObject
         return $controller;
     }
 
+    /**
+     * @param $model BaseModel
+     * @return BaseModel
+     */
     private function seedModel($model)
     {
         if ($model) {
@@ -154,6 +158,10 @@ abstract class BaseController extends BaseObject
         return $model;
     }
 
+    /**
+     * @param $controller BaseController
+     * @return BaseController
+     */
     private function seedController($controller)
     {
         if ($controller) {
