@@ -35,6 +35,9 @@ class ModuleFactory extends BaseFactory
     /** @var  DatabaseProvider[] Array of databases created from the configuration file. */
     public $databases;
 
+    /** @var  ProjectFactory Factory for the internal objects of the controller */
+    public $projectFactory;
+
     protected function init()
     {
         $this->classArray = ['Module\BaseModule'];
@@ -42,11 +45,12 @@ class ModuleFactory extends BaseFactory
 
     protected function additionalSetup($object)
     {
-        $object->request    = $this->request;
-        $object->session    = $this->session;
-        $object->serverInfo = $this->serverInfo;
-        $object->ajax       = $this->ajax;
-        $object->databases  = $this->databases;
+        $object->request        = $this->request;
+        $object->session        = $this->session;
+        $object->serverInfo     = $this->serverInfo;
+        $object->ajax           = $this->ajax;
+        $object->databases      = $this->databases;
+        $object->projectFactory = $this->projectFactory;
 
         return $object;
     }

@@ -12,6 +12,7 @@
 namespace ZCode\Lighting\Module;
 
 use ZCode\Lighting\Controller\BaseController;
+use ZCode\Lighting\Factory\ProjectFactory;
 use ZCode\Lighting\Http\Request;
 use ZCode\Lighting\Http\ServerInfo;
 use ZCode\Lighting\Object\BaseObject;
@@ -33,6 +34,9 @@ class BaseModule extends BaseObject
 
     /** @var  ServerInfo */
     public $serverInfo;
+
+    /** @var  ProjectFactory Factory for the internal objects of the controller */
+    public $projectFactory;
 
     /** @var  boolean */
     public $ajax;
@@ -87,6 +91,7 @@ class BaseModule extends BaseObject
         $this->controller->serverInfo       = $this->serverInfo;
         $this->controller->session          = $this->session;
         $this->controller->resourcePath     = $this->resourcePath;
+        $this->controller->projectFactory   = $this->projectFactory;
         $this->controller->moduleName       = $moduleLoaded;
 
         return true;

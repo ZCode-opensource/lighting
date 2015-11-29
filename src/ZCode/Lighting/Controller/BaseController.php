@@ -36,16 +36,23 @@ abstract class BaseController extends BaseObject
     /** @var  Session Session object */
     public $session;
 
-    public $resourcePath;
-    public $moduleName;
+    /** @var  ProjectFactory Factory for the internal objects of the controller */
+    public $projectFactory;
 
     /** @var  DatabaseProvider[] Array of databases created from the configuration file. */
     public $databases;
 
+    /** @var  string path to the resource directory */
+    public $resourcePath;
+
+    /** @var  string Name of the actual module in use */
+    public $moduleName;
+
     public $priorityCssList;
+    public $priorityJsList;
+
     public $cssList;
     public $jsList;
-    public $priorityJsList;
 
     abstract public function run();
     abstract public function runAjax();
@@ -161,11 +168,10 @@ abstract class BaseController extends BaseObject
 
     private function getObject($type, $name)
     {
-        $projectNameSpace  = $this->serverInfo->getData(ServerInfo::PROJECT_NAMESPACE);
-        $factory           = new ProjectFactory($this->logger);
-        $factory->basePath = $projectNameSpace.'\Modules\\'.$this->moduleName;
+        $projectNameSpace               = $this->serverInfo->getData(ServerInfo::PROJECT_NAMESPACE);
+        $this->projectFactory->basePath = $projectNameSpace.'\Modules\\'.$this->moduleName;
 
-        $object  = $factory->create($type, $name);
+        $object  = $this->projectFactory->create($type, $name);
 
         return $object;
     }
