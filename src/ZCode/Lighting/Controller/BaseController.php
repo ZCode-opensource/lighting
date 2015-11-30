@@ -165,12 +165,14 @@ abstract class BaseController extends BaseObject
     private function seedController($controller)
     {
         if ($controller) {
-            $controller->databases        = $this->databases;
-            $controller->request          = $this->request;
-            $controller->serverInfo       = $this->serverInfo;
-            $controller->session          = $this->session;
-            $controller->resourcePath     = $this->resourcePath;
-            $controller->moduleName       = $this->moduleName;
+            $controller->databases      = $this->databases;
+            $controller->request        = $this->request;
+            $controller->serverInfo     = $this->serverInfo;
+            $controller->session        = $this->session;
+            $controller->resourcePath   = $this->resourcePath;
+            $controller->projectFactory = $this->projectFactory;
+            $controller->widgetFactory  = $this->widgetFactory;
+            $controller->moduleName     = $this->moduleName;
         }
 
         return $controller;
