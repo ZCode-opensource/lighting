@@ -52,9 +52,9 @@ class BaseControllerTest extends \PHPUnit_Framework_TestCase
         ];
 
         $customFactoryMap = [
-            ['ZCode\Lighting\Tests\Modules\Models\TestPath\Test', 'TestModel', new BaseModel(null)],
+            ['ZCode\Lighting\Tests\Modules\TestModule\Models\TestPath\Test', 'TestModel', new BaseModel(null)],
             [
-                'ZCode\Lighting\Tests\Modules\Controllers\TestPath\Test',
+                'ZCode\Lighting\Tests\Modules\TestModule\Controllers\TestPath\Test',
                 'TestController',
                 $this->getMockForAbstractClass('\ZCode\Lighting\Controller\BaseController', [null])
             ]
@@ -84,6 +84,7 @@ class BaseControllerTest extends \PHPUnit_Framework_TestCase
     {
         $mockController = $this->getMockForAbstractClass('\ZCode\Lighting\Controller\BaseController', [null]);
         $mockController->serverInfo = $this->mockInfo;
+        $mockController->moduleName = 'TestModule';
 
         $tmpl = new Template(null);
         $this->assertEquals($tmpl, $mockController->getTemplate('test.html', '/'));
@@ -101,6 +102,7 @@ class BaseControllerTest extends \PHPUnit_Framework_TestCase
 
         $controller->serverInfo     = $this->mockInfo;
         $controller->projectFactory = $this->mockProjectFactory;
+        $controller->moduleName     = 'TestModule';
 
         $testView = $method->invokeArgs($controller, ['TestView']);
         $badView  = $method->invokeArgs($controller, ['FailView']);
@@ -122,6 +124,7 @@ class BaseControllerTest extends \PHPUnit_Framework_TestCase
 
         $controller->serverInfo     = $this->mockInfo;
         $controller->projectFactory = $this->mockProjectFactory;
+        $controller->moduleName     = 'TestModule';
 
         $testModel = $method->invokeArgs($controller, ['TestModel']);
         $badModel  = $method->invokeArgs($controller, ['FailModel']);
@@ -143,6 +146,7 @@ class BaseControllerTest extends \PHPUnit_Framework_TestCase
 
         $controller->serverInfo     = $this->mockInfo;
         $controller->projectFactory = $this->mockProjectFactory;
+        $controller->moduleName     = 'TestModule';
 
         $testController = $method->invokeArgs($controller, ['TestController']);
         $badController  = $method->invokeArgs($controller, ['FailController']);
@@ -162,6 +166,7 @@ class BaseControllerTest extends \PHPUnit_Framework_TestCase
 
         $controller->serverInfo    = $this->mockInfo;
         $controller->widgetFactory = $this->mockWidgetFactory;
+        $controller->moduleName    = 'TestModule';
 
         $testWidget = $method->invokeArgs($controller, ['TestWidget']);
 
@@ -181,6 +186,7 @@ class BaseControllerTest extends \PHPUnit_Framework_TestCase
 
         $controller->serverInfo     = $this->mockInfo;
         $controller->projectFactory = $this->mockProjectFactory;
+        $controller->moduleName     = 'TestModule';
 
         $testModel = $method->invokeArgs($controller, ['TestModel', 'TestPath/Test']);
         $badModel  = $method->invokeArgs($controller, ['FailModel', 'TestPath/Test']);
@@ -202,6 +208,7 @@ class BaseControllerTest extends \PHPUnit_Framework_TestCase
 
         $controller->serverInfo     = $this->mockInfo;
         $controller->projectFactory = $this->mockProjectFactory;
+        $controller->moduleName     = 'TestModule';
 
         $testController = $method->invokeArgs($controller, ['TestController', 'TestPath/Test']);
         $badController  = $method->invokeArgs($controller, ['FailController', 'TestPath/Test']);

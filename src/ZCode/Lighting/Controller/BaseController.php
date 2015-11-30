@@ -131,7 +131,7 @@ abstract class BaseController extends BaseObject
 
     protected function createCustomModel($name, $path)
     {
-        $model = $this->getCustomObject($name, 'Models\\'.$path);
+        $model = $this->getCustomObject($name, '\\Models\\'.$path);
         $model = $this->seedModel($model);
 
         return $model;
@@ -139,7 +139,7 @@ abstract class BaseController extends BaseObject
 
     protected function createCustomController($name, $path)
     {
-        $controller = $this->getCustomObject($name, 'Controllers\\'.$path);
+        $controller = $this->getCustomObject($name, '\\Controllers\\'.$path);
         $controller = $this->seedController($controller);
 
         return $controller;
