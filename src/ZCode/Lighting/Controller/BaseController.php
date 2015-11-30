@@ -131,7 +131,7 @@ abstract class BaseController extends BaseObject
 
     protected function createCustomModel($name, $path)
     {
-        $model = $this->getCustomObject($name, '\\Models\\'.$path);
+        $model = $this->getCustomObject($name, 'Models\\'.$path);
         $model = $this->seedModel($model);
 
         return $model;
@@ -139,7 +139,7 @@ abstract class BaseController extends BaseObject
 
     protected function createCustomController($name, $path)
     {
-        $controller = $this->getCustomObject($name, '\\Controllers\\'.$path);
+        $controller = $this->getCustomObject($name, 'Controllers\\'.$path);
         $controller = $this->seedController($controller);
 
         return $controller;
@@ -193,10 +193,10 @@ abstract class BaseController extends BaseObject
         if ($path !== null && strlen($path) > 0) {
             $path = str_replace('/', '\\', $path);
 
-            $projectNameSpace  = $this->serverInfo->getData(ServerInfo::PROJECT_NAMESPACE);
-            $factory           = new ProjectFactory($this->logger);
-            $factory->basePath = $projectNameSpace.'\Modules\\'.$this->moduleName.$path;
-            $object            = $factory->customCreate($factory->basePath, $name);
+            $projectNameSpace               = $this->serverInfo->getData(ServerInfo::PROJECT_NAMESPACE);
+            $this->projectFactory->basePath = $projectNameSpace.'\Modules\\'.$this->moduleName.$path;
+
+            $object = $this->projectFactory->customCreate($this->projectFactory->basePath, $name);
         }
 
         return $object;
