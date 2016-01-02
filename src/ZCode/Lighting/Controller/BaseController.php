@@ -145,6 +145,14 @@ abstract class BaseController extends BaseObject
         return $controller;
     }
 
+    protected function createGlobalModel($name, $internalPath = '')
+    {
+        $model = $this->getGlobalObject($name, $internalPath);
+        $model = $this->seedModel($model);
+
+        return $model;
+    }
+
     /**
      * @param $model BaseModel
      * @return BaseModel
@@ -200,6 +208,23 @@ abstract class BaseController extends BaseObject
 
             $object = $this->projectFactory->customCreate($this->projectFactory->basePath, $name);
         }
+
+        return $object;
+    }
+
+    private function getGlobalObject($name, $internalPath)
+    {
+        $object = null;
+        $path   = '';
+
+        if (strlen($internalPath) > 0) {
+            $internalPath = str_replace('/', '\\', $internalPath);
+            $path = '\\'.$internalPath;
+        }
+
+        $projectNameSpace               = $this->serverInfo->getData(ServerInfo::PROJECT_NAMESPACE);
+        $this->projectFactory->basePath = $projectNameSpace.'\GlobalModels'.$path;
+        $object                         = $this->projectFactory->customCreate($this->projectFactory->basePath, $name);
 
         return $object;
     }
