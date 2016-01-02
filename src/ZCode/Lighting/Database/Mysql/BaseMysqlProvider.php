@@ -118,4 +118,25 @@ class BaseMysqlProvider extends DatabaseProvider
 
         return $objects;
     }
+
+    public function setAutocommit($value)
+    {
+        $realValue = false;
+
+        if ($value === true || $value === 1) {
+            $realValue = true;
+        }
+
+        return $this->mysqli->autocommit($realValue);
+    }
+
+    public function commit()
+    {
+        return $this->mysqli->commit();
+    }
+
+    public function rollback()
+    {
+        return $this->mysqli->rollback();
+    }
 }
