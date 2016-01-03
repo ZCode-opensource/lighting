@@ -67,7 +67,12 @@ class BaseView extends BaseObject
         return $widget;
     }
 
-    protected function generateSelectOptions($items, $itemId)
+    /**
+     * @param array $items
+     * @param int $itemId
+     * @return string
+     */
+    protected function generateSelectOptions($items, $itemId = null)
     {
         $options = '';
 
@@ -77,7 +82,7 @@ class BaseView extends BaseObject
             for ($i = 0; $i < $numItems; $i++) {
                 $selected = '';
 
-                if ($itemId != null && $itemId === $items[$i]->item_id) {
+                if ($itemId !== null && $itemId === $items[$i]->item_id) {
                     $selected = 'selected="selected"';
                 }
 
