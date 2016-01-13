@@ -51,6 +51,9 @@ abstract class BaseController extends BaseObject
     /** @var  string Name of the actual module in use */
     public $moduleName;
 
+    /** @var  boolean */
+    public $raw;
+
     public $priorityCssList;
     public $priorityJsList;
 
@@ -66,6 +69,8 @@ abstract class BaseController extends BaseObject
         $this->cssList         = [];
         $this->priorityJsList  = [];
         $this->jsList          = [];
+
+        $this->raw = false;
 
         $this->response = '';
     }

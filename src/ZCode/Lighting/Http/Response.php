@@ -24,4 +24,10 @@ class Response extends BaseObject
         http_response_code(200);
         echo $json;
     }
+
+    public function raw($data)
+    {
+        http_response_code(200);
+        echo $data;
+    }
 }
