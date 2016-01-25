@@ -116,6 +116,9 @@ class TableEntity
             case 'integer':
                 $type = 'i';
                 break;
+            case 'double':
+                $type = 'd';
+                break;
             case 'string':
                 $type = 's';
                 break;

@@ -45,6 +45,9 @@ class BaseModule extends BaseObject
     /** @var  boolean */
     public $ajax;
 
+    /** @var  boolean */
+    public $raw;
+
     /** @var  array */
     public $moduleCssList;
 
@@ -130,6 +133,9 @@ class BaseModule extends BaseObject
         }
 
         $this->controller->run();
+
+        // Get the raw property
+        $this->raw = $this->controller->raw;
 
         // process the css files
         $this->moduleCssList = array_merge($this->controller->priorityCssList, $this->controller->cssList);

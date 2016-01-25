@@ -288,8 +288,15 @@ class Application
 
     private function renderResponse($response, $ajax)
     {
+        // Check if its an ajax response
         if ($ajax) {
             $this->response->json($response);
+            return;
+        }
+
+        // Check if its a raw response (no templates and no headers)
+        if ($this->module->raw) {
+            $this->response->raw($response);
             return;
         }
 
