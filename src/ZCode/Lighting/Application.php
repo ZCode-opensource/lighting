@@ -169,7 +169,7 @@ class Application
             return false;
         }
 
-        $userAuth    = $this->session->getVar('auth', true);
+        $userAuth    = $this->session->getBoolean('auth');
         $authModules = $this->config->getConfig('auth', 'modules', false);
 
         if ($authModules === '*') {
