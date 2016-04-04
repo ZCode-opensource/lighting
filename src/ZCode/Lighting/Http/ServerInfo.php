@@ -24,6 +24,8 @@ class ServerInfo extends BaseObject
     const RELATIVE_PATH     = 2;
     const MODULE            = 3;
     const PROJECT_NAMESPACE = 4;
+    const HTTP_REFERER      = 5;
+    const REMOTE_ADDR       = 6;
 
     private $data;
     private $relativePath;
@@ -31,6 +33,12 @@ class ServerInfo extends BaseObject
     protected function init()
     {
         $this->data = [];
+
+        $this->data[self::REMOTE_ADDR] = $_SERVER['REMOTE_ADDR'];
+
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            $this->data[self::HTTP_REFERER] = $_SERVER['HTTP_REFERER'];
+        }
     }
 
     public function setRelativePath($path)
