@@ -22,6 +22,7 @@ class DatabaseFactory extends BaseFactory
     public $password;
     public $forceCharset;
     public $charset;
+    public $debug;
 
     /** @var  DatabaseProvider Database object. */
     public $database;
@@ -39,6 +40,7 @@ class DatabaseFactory extends BaseFactory
         $object->database     = $this->database;
         $object->forceCharset = $this->forceCharset;
         $object->charset      = $this->charset;
+        $object->debug        = $this->debug;
 
         return $object;
     }

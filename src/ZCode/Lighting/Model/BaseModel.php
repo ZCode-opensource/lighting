@@ -40,10 +40,6 @@ class BaseModel extends BaseObject
 
         if ($numDatabases > 0) {
             $this->databases = $databases;
-
-            foreach ($this->databases as $value) {
-                $value->connect();
-            }
         }
     }
 
@@ -56,7 +52,14 @@ class BaseModel extends BaseObject
     public function getDatabase($name)
     {
         if (isset($this->databases[$name])) {
-            return $this->databases[$name];
+            /** @var DatabaseProvider $database */
+            $database = $this->databases[$name];
+
+            if (!$database->connectionError && !$database->connected) {
+                $database->connect();
+            }
+
+            return $database;
         }
 
         return false;

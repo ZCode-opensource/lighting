@@ -22,8 +22,25 @@ class BaseMysqlProvider extends DatabaseProvider
     {
         $this->mysqli = new \mysqli($this->server, $this->user, $this->password, $this->database);
 
-        if ($this->forceCharset && strlen($this->charset) > 0) {
-            $this->mysqli->set_charset($this->charset);
+        if ($this->mysqli->connect_errno) {
+            $this->connectionError = true;
+            $this->logger->addError('Failed to connect to MySQL: '.$this->mysqli->connect_error);
+        }
+
+        if (!$this->connectionError) {
+            $this->connected = true;
+
+            if ($this->debug) {
+                $this->setQuery("SHOW STATUS WHERE `variable_name` = 'Threads_connected';");
+                $numConnections = $this->loadField('Value');
+
+                $this->logger->addDebug('Current connections: '.$numConnections);
+                $this->logger->addDebug('Server stats: '.$this->mysqli->stat());
+            }
+
+            if ($this->forceCharset && strlen($this->charset) > 0) {
+                $this->mysqli->set_charset($this->charset);
+            }
         }
     }
 

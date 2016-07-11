@@ -213,8 +213,10 @@ class Application
         $databases   = [];
 
         if ($useDatabase) {
-            $databaseFactory = new DatabaseFactory($this->logger);
-            $databaseCount   = intval($this->config->getConfig('database', 'number_databases', false));
+            $databaseFactory        = new DatabaseFactory($this->logger);
+            $databaseFactory->debug = $this->config->getConfig('database', 'debug_databases', true);
+
+            $databaseCount = intval($this->config->getConfig('database', 'number_databases', false));
 
             for ($i = 0; $i < $databaseCount; $i++) {
                 $dbSection  = 'database_'.($i + 1);
