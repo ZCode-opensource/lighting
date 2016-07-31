@@ -117,7 +117,7 @@ abstract class BaseController extends BaseObject
         return $controller;
     }
 
-    protected function createWidget($name)
+    public function createWidget($name)
     {
         $projectNameSpace = $this->serverInfo->getData(ServerInfo::PROJECT_NAMESPACE);
 
