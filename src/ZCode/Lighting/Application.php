@@ -25,6 +25,7 @@ use ZCode\Lighting\Http\Request;
 use ZCode\Lighting\Http\Response;
 use ZCode\Lighting\Http\ServerInfo;
 use ZCode\Lighting\Module\BaseModule;
+use ZCode\Lighting\Module\ModuleGlobalData;
 use ZCode\Lighting\Processor\BaseProcessor;
 use ZCode\Lighting\Session\Session;
 use Zend\Filter\Boolean;
@@ -269,6 +270,9 @@ class Application
         $moduleFactory->projectFactory = $projectFactory;
         $moduleFactory->widgetFactory  = $widgetFactory;
         $moduleFactory->ajax           = $ajax;
+        $moduleFactory->globalData     = new ModuleGlobalData($this->logger);
+
+        // $moduleGlobalData = new ModuleGlobalData($this->logger);
 
         $this->serverInfo->setData(
             ServerInfo::PROJECT_NAMESPACE,
@@ -290,6 +294,7 @@ class Application
             $preProcObj->session    = $this->session;
             $preProcObj->ajax       = $ajax;
             $preProcObj->setDatabases($databases);
+            $preProcObj->globalData = $moduleFactory->globalData;
 
             if (!$preProcObj->preprocessor()) {
                 return null;
@@ -325,9 +330,9 @@ class Application
         }
 
         // Generate footer module if needed
-        $genrateFooter = $this->config->getConfig('footer', 'generate_footer', true);
+        $generateFooter = $this->config->getConfig('footer', 'generate_footer', true);
 
-        if ($genrateFooter) {
+        if ($generateFooter) {
             $footerModule = $this->config->getConfig('footer', 'footer_module', false);
             $this->footerModule = $moduleFactory->create(ModuleFactory::MODULE);
             $this->footerModule->setModuleName($footerModule);

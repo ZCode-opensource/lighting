@@ -15,6 +15,7 @@ use ZCode\Lighting\Http\Request;
 use ZCode\Lighting\Http\Response;
 use ZCode\Lighting\Http\ServerInfo;
 use ZCode\Lighting\Model\BaseModel;
+use ZCode\Lighting\Module\ModuleGlobalData;
 use ZCode\Lighting\Session\Session;
 
 class BaseProcessor extends BaseModel
@@ -33,6 +34,9 @@ class BaseProcessor extends BaseModel
 
     /** @var  boolean */
     public $ajax;
+
+    /** @var ModuleGlobalData */
+    public $globalData;
 
     public function init()
     {

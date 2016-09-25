@@ -18,6 +18,7 @@ use ZCode\Lighting\Http\Request;
 use ZCode\Lighting\Http\Response;
 use ZCode\Lighting\Http\ServerInfo;
 use ZCode\Lighting\Model\BaseModel;
+use ZCode\Lighting\Module\ModuleGlobalData;
 use ZCode\Lighting\Object\BaseObject;
 use ZCode\Lighting\Session\Session;
 use ZCode\Lighting\Template\Template;
@@ -53,6 +54,9 @@ abstract class BaseController extends BaseObject
 
     /** @var  boolean */
     public $raw;
+
+    /** @var ModuleGlobalData */
+    public $globalData;
 
     public $priorityCssList;
     public $priorityJsList;
@@ -92,6 +96,7 @@ abstract class BaseController extends BaseObject
         if ($view) {
             $view->serverInfo           = $this->serverInfo;
             $view->resourcePath         = $this->resourcePath;
+            $view->globalData           = $this->globalData;
             $view->templateFunction     = [$this, 'getTemplate'];
             $view->addCssFunction       = [$this, 'addCss'];
             $view->addJsFunction        = [$this, 'addJs'];
@@ -166,6 +171,7 @@ abstract class BaseController extends BaseObject
     {
         if ($model) {
             $model->setDatabases($this->databases);
+            $model->globalData = $this->globalData;
         }
 
         return $model;

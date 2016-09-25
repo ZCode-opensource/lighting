@@ -12,11 +12,15 @@
 namespace ZCode\Lighting\View;
 
 use ZCode\Lighting\Http\ServerInfo;
+use ZCode\Lighting\Module\ModuleGlobalData;
 use ZCode\Lighting\Object\BaseObject;
 use ZCode\Lighting\Template\Template;
 
 class BaseView extends BaseObject
 {
+    /** @var ModuleGlobalData */
+    public $globalData;
+
     public $templateFunction;
     public $addCssFunction;
     public $addJsFunction;

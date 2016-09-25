@@ -12,6 +12,7 @@
 namespace ZCode\Lighting\Model;
 
 use ZCode\Lighting\Database\DatabaseProvider;
+use ZCode\Lighting\Module\ModuleGlobalData;
 use ZCode\Lighting\Object\BaseObject;
 
 class BaseModel extends BaseObject
@@ -22,6 +23,9 @@ class BaseModel extends BaseObject
 
     /** @var  DatabaseProvider[] Array of databases created from the configuration file. */
     private $databases;
+
+    /** @var ModuleGlobalData */
+    public $globalData;
 
     protected $table;
     protected $data;

@@ -60,6 +60,9 @@ class BaseModule extends BaseObject
     /** @var  string */
     private $resourcePath;
 
+    /** @var ModuleGlobalData */
+    public $globalData;
+
     public function setModuleName($name)
     {
         $this->moduleName = $name;
@@ -101,6 +104,7 @@ class BaseModule extends BaseObject
         $this->controller->projectFactory = $this->projectFactory;
         $this->controller->widgetFactory  = $this->widgetFactory;
         $this->controller->moduleName     = $moduleLoaded;
+        $this->controller->globalData     = $this->globalData;
 
         return true;
     }

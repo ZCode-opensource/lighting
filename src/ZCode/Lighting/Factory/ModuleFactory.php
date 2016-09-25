@@ -14,6 +14,7 @@ namespace ZCode\Lighting\Factory;
 use ZCode\Lighting\Database\DatabaseProvider;
 use ZCode\Lighting\Http\Request;
 use ZCode\Lighting\Http\ServerInfo;
+use ZCode\Lighting\Module\ModuleGlobalData;
 use ZCode\Lighting\Session\Session;
 
 class ModuleFactory extends BaseFactory
@@ -41,6 +42,9 @@ class ModuleFactory extends BaseFactory
     /** @var  WidgetFactory Factory for creating widgets */
     public $widgetFactory;
 
+    /** @var ModuleGlobalData Global data object shared between controllers, models and views */
+    public $globalData;
+
     protected function init()
     {
         $this->classArray = ['Module\BaseModule'];
@@ -55,6 +59,7 @@ class ModuleFactory extends BaseFactory
         $object->databases      = $this->databases;
         $object->projectFactory = $this->projectFactory;
         $object->widgetFactory  = $this->widgetFactory;
+        $object->globalData     = $this->globalData;
 
         return $object;
     }
