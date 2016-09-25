@@ -285,6 +285,10 @@ class Application
 
             /** @var BaseProcessor $preProcObj */
             $preProcObj = $projectFactory->customCreate($preNamespace, $preClass);
+            $preProcObj->request    = $this->request;
+            $preProcObj->serverInfo = $this->serverInfo;
+            $preProcObj->session    = $this->session;
+            $preProcObj->ajax       = $ajax;
             $preProcObj->setDatabases($databases);
 
             if (!$preProcObj->preprocessor()) {
@@ -298,6 +302,10 @@ class Application
 
             /** @var BaseProcessor $postProcObj */
             $postProcObj = $projectFactory->customCreate($postNamespace, $postClass);
+            $postProcObj->request    = $this->request;
+            $postProcObj->serverInfo = $this->serverInfo;
+            $postProcObj->session    = $this->session;
+            $postProcObj->ajax       = $ajax;
             $postProcObj->setDatabases($databases);
 
             $this->postProcObj = $postProcObj;
