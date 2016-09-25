@@ -12,6 +12,7 @@
 namespace ZCode\Lighting;
 
 use ZCode\Lighting\Configuration\Configuration;
+use ZCode\Lighting\Demo\System\GlobalProcessor;
 use ZCode\Lighting\Factory\DatabaseFactory;
 use ZCode\Lighting\Factory\MainFactory;
 
@@ -24,7 +25,9 @@ use ZCode\Lighting\Http\Request;
 use ZCode\Lighting\Http\Response;
 use ZCode\Lighting\Http\ServerInfo;
 use ZCode\Lighting\Module\BaseModule;
+use ZCode\Lighting\Processor\BaseProcessor;
 use ZCode\Lighting\Session\Session;
+use Zend\Filter\Boolean;
 
 class Application
 {
@@ -63,6 +66,12 @@ class Application
 
     /** @var  BaseModule */
     private $footerModule;
+
+    /** @var Boolean */
+    private $postProc;
+
+    /** @var BaseProcessor */
+    private $postProcObj;
 
     public function __construct($mainFactory)
     {
@@ -158,7 +167,10 @@ class Application
         ini_set('xdebug.overload_var_dump', $xdebug);
 
         $moduleResponse = $this->generateModuleResponse($module, $ajax);
-        $this->renderResponse($moduleResponse, $ajax);
+
+        if ($moduleResponse !== null) {
+            $this->renderResponse($moduleResponse, $ajax);
+        }
     }
 
     private function validateAuth($module)
@@ -263,6 +275,34 @@ class Application
             $this->config->getConfig('application', 'project_namespace', false)
         );
 
+        // Check pre and post processing information
+        $preProc        = $this->config->getConfig('application', 'preprocessing', true);
+        $this->postProc = $this->config->getConfig('application', 'postprocessing', true);
+
+        if ($preProc) {
+            $preNamespace = $this->config->getConfig('application', 'preprocessing_namespace');
+            $preClass     = $this->config->getConfig('application', 'preprocessing_class');
+
+            /** @var BaseProcessor $preProcObj */
+            $preProcObj = $projectFactory->customCreate($preNamespace, $preClass);
+            $preProcObj->setDatabases($databases);
+
+            if (!$preProcObj->preprocessor()) {
+                return null;
+            }
+        }
+
+        if ($this->postProc) {
+            $postNamespace = $this->config->getConfig('application', 'postprocessing_namespace');
+            $postClass     = $this->config->getConfig('application', 'postprocessing_class');
+
+            /** @var BaseProcessor $postProcObj */
+            $postProcObj = $projectFactory->customCreate($postNamespace, $postClass);
+            $postProcObj->setDatabases($databases);
+
+            $this->postProcObj = $postProcObj;
+        }
+
         $this->module = $moduleFactory->create(ModuleFactory::MODULE);
         $this->module->setModuleName($module);
         $response = $this->module->getResponse($this->errorModule);
@@ -345,6 +385,12 @@ class Application
 
         $jsString .= $this->processModuleJs($this->module->moduleJsList);
         $tmpl->addSearchReplace('{#JS#}', $jsString);
+
+        if ($this->postProc) {
+            if (!$this->postProcObj->postprocessor()) {
+                return;
+            }
+        }
 
         $this->response->html($tmpl->getHtml());
     }
