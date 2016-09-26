@@ -32,7 +32,7 @@ class ModuleGlobalData extends BaseObject
 
     public function getData($field)
     {
-        if (isset($this->data[$field])) {
+        if (!isset($this->data[$field])) {
             return null;
         }
 
