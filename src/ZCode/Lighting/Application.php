@@ -51,19 +51,22 @@ class Application
     /** @var Logger */
     private $logger;
 
-    /** @var  Session */
+    /** @var Session */
     private $session;
 
-    /** @var  BaseModule */
+    /** @var BaseModule */
     private $module;
 
     /** @var  string */
     private $errorModule;
 
-    /** @var  BaseModule */
+    /** @var BaseModule */
+    private $headerModule;
+
+    /** @var BaseModule */
     private $menuModule;
 
-    /** @var  BaseModule */
+    /** @var BaseModule */
     private $footerModule;
 
     /** @var Boolean */
@@ -318,6 +321,15 @@ class Application
         $this->module->setModuleName($module);
         $response = $this->module->getResponse($this->errorModule);
 
+        // Generate header module if needed
+        $generateHeader = $this->config->getConfig('header', 'generate_header', true);
+
+        if ($generateHeader) {
+            $headerModule = $this->config->getConfig('header', 'header_module', false);
+            $this->headerModule = $moduleFactory->create(ModuleFactory::MODULE);
+            $this->headerModule->setModuleName($headerModule);
+        }
+
         // Generate menu module if needed
         $generateMenu = $this->config->getConfig('menu', 'generate_menu', true);
 
@@ -366,13 +378,24 @@ class Application
         $cssString = '';
         $jsString  = '';
 
+        // Generate Header
+        $header = '';
+
+        if ($this->headerModule) {
+            $header    = $this->headerModule->getResponse($this->errorModule);
+            $cssString = $this->processModuleCss($this->headerModule->moduleCssList);
+            $jsString  = $this->processModuleJs($this->headerModule->moduleJsList);
+        }
+
+        $tmpl->addSearchReplace('{#HEADER#}', $header);
+
         // Generate Menu
         $menu = '';
 
         if ($this->menuModule) {
-            $menu      = $this->menuModule->getResponse($this->errorModule);
-            $cssString = $this->processModuleCss($this->menuModule->moduleCssList);
-            $jsString  = $this->processModuleJs($this->menuModule->moduleJsList);
+            $menu       = $this->menuModule->getResponse($this->errorModule);
+            $cssString .= $this->processModuleCss($this->menuModule->moduleCssList);
+            $jsString  .= $this->processModuleJs($this->menuModule->moduleJsList);
         }
 
         $tmpl->addSearchReplace('{#MENU#}', $menu);
