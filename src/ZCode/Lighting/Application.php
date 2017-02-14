@@ -12,7 +12,6 @@
 namespace ZCode\Lighting;
 
 use ZCode\Lighting\Configuration\Configuration;
-use ZCode\Lighting\Demo\System\GlobalProcessor;
 use ZCode\Lighting\Factory\DatabaseFactory;
 use ZCode\Lighting\Factory\MainFactory;
 
@@ -28,7 +27,6 @@ use ZCode\Lighting\Module\BaseModule;
 use ZCode\Lighting\Module\ModuleGlobalData;
 use ZCode\Lighting\Processor\BaseProcessor;
 use ZCode\Lighting\Session\Session;
-use Zend\Filter\Boolean;
 
 class Application
 {
