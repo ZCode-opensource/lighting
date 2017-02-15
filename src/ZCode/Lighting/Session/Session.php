@@ -240,4 +240,19 @@ class Session extends BaseObject
 
         return null;
     }
+
+    /**
+     * @param $name
+     * @return bool}
+     */
+    public function delete($name)
+    {
+        if (isset($_SESSION[$name])) {
+            unset($_SESSION[$name]);
+
+            return true;
+        }
+
+        return false;
+    }
 }
