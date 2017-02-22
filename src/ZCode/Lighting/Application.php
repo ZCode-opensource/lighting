@@ -100,7 +100,13 @@ class Application
         $this->response   = $this->mainFactory->create(MainFactory::RESPONSE);
         $this->serverInfo = $this->mainFactory->create(MainFactory::SERVER_INFO);
 
-        $relativePath = $this->config->getConfig('site', 'relative_path', false);
+        $internalParh = $relativePath = $this->config->getConfig('site', 'internal_path', true);
+        $relativePath = '';
+
+        if ($internalParh) {
+            $relativePath = $this->config->getConfig('site', 'relative_path', false);
+        }
+
         $this->serverInfo->setRelativePath($relativePath);
     }
 
@@ -128,11 +134,7 @@ class Application
         $module        = $this->request->getPostVar('module', Request::STRING);
 
         if (!$module) {
-            $internalPath = $this->config->getConfig('site', 'internal_path', false);
-            $module       = $this->request->getModule(
-                $internalPath,
-                $this->serverInfo->getData(ServerInfo::RELATIVE_PATH)
-            );
+            $module = $this->request->getModule($this->serverInfo->getData(ServerInfo::RELATIVE_PATH));
         }
 
         if ($module == 'logout') {
@@ -272,8 +274,6 @@ class Application
         $moduleFactory->widgetFactory  = $widgetFactory;
         $moduleFactory->ajax           = $ajax;
         $moduleFactory->globalData     = new ModuleGlobalData($this->logger);
-
-        // $moduleGlobalData = new ModuleGlobalData($this->logger);
 
         $this->serverInfo->setData(
             ServerInfo::PROJECT_NAMESPACE,

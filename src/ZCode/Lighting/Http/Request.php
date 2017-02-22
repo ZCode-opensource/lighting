@@ -148,18 +148,17 @@ class Request extends BaseObject
      * @param string $path
      * @return bool|string
      */
-    public function getModule($internalPath, $path)
+    public function getModule($path)
     {
         $module = $this->requestUri;
-
-        if ($internalPath) {
-            $module = $this->strReplaceFirst($path, '', $module);
-        }
-
-        $index = strpos($module, '?');
+        $index  = strpos($module, '?');
 
         if ($index > 0) {
             $module = substr($module, 0, $index);
+        }
+
+        if (strlen($path) > 0) {
+            $module = str_replace(strtolower($path), '', strtolower($module));
         }
 
         if (substr($module, 0, 1) === '/') {
