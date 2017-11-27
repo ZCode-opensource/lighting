@@ -49,7 +49,10 @@ class MysqlHelper
                 $types   .= $keys[$i]['type'];
                 $values[] = &$keys[$i]['value'];
                 $where   .= $keys[$i]['field'].' = ? AND ';
-                $where    = substr($where, 0, (strlen($where) - 4));
+                
+                if ($i === $numKeys - 1) {
+                    $where    = substr($where, 0, (strlen($where) - 4));
+                }
             }
         } else {
             $types   .= $keys['type'];
