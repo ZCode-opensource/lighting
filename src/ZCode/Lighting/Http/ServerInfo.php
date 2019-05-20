@@ -68,7 +68,7 @@ class ServerInfo extends BaseObject
 
     public function getBaseUrl()
     {
-        $value = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'];
+        $value = '//'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'];
         $value = str_replace('index.php', '', $value);
 
         return $value;

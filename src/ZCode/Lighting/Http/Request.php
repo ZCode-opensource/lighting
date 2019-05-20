@@ -146,9 +146,10 @@ class Request extends BaseObject
     /**
      * @param string $internalPath
      * @param string $path
+     * @param bool $multilang
      * @return bool|string
      */
-    public function getModule($path)
+    public function getModule($path, $multilang=false)
     {
         $module = $this->requestUri;
         $index  = strpos($module, '?');
@@ -164,6 +165,22 @@ class Request extends BaseObject
         if (substr($module, 0, 1) === '/') {
             $urlVars = substr($module, 1, strlen($module));
             $this->urlVars = explode('/', $urlVars);
+
+            if ($multilang) {
+                if (!isset($this->urlVars[1])) {
+                    return false;
+                }
+
+                $module = $this->urlVars[1];
+
+                if (strlen($module) === 0) {
+                    return false;
+                }
+
+
+                return $module;
+            }
+
             $module = $this->urlVars[0];
         }
 

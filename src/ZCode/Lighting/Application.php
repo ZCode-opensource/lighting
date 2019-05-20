@@ -134,7 +134,8 @@ class Application
         $module        = $this->request->getPostVar('module', Request::STRING);
 
         if (!$module) {
-            $module = $this->request->getModule($this->serverInfo->getData(ServerInfo::RELATIVE_PATH));
+            $multilang = $this->config->getConfig('site', 'multilang', false);
+            $module = $this->request->getModule($this->serverInfo->getData(ServerInfo::RELATIVE_PATH), $multilang);
         }
 
         if ($module == 'logout') {
