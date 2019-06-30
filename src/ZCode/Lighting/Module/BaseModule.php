@@ -48,11 +48,23 @@ class BaseModule extends BaseObject
     /** @var  boolean */
     public $raw;
 
+    /** @var string */
+    public $pageTitle;
+
+    /** @var string */
+    public $bodyStyle;
+
+    /** @var String */
+    public $htmlStyle;
+
     /** @var  array */
     public $moduleCssList;
 
     /** @var  array */
     public $moduleJsList;
+
+    /** @var array */
+    public $headerTagList;
 
     /** @var  BaseController */
     private $controller;
@@ -68,6 +80,8 @@ class BaseModule extends BaseObject
         $this->moduleName = $name;
         $this->moduleCssList = [];
         $this->moduleJsList = [];
+        $this->headerTagList = [];
+        $this->pageTitle = '';
     }
 
     private function moduleInit($errorModule)
@@ -146,6 +160,18 @@ class BaseModule extends BaseObject
 
         // process the js files
         $this->moduleJsList = array_merge($this->controller->priorityJsList, $this->controller->jsList);
+
+        // Get the header tags if any
+        $this->headerTagList = $this->controller->headerTagList;
+
+        // Get the page title if any
+        $this->pageTitle = $this->controller->pageTitle;
+
+        // Get the html style if any
+        $this->htmlStyle = $this->controller->htmlStyle;
+
+        // Get the body style if any
+        $this->bodyStyle = $this->controller->bodyStyle;
 
         return $this->controller->response;
     }

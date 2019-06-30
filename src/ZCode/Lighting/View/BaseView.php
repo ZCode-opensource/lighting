@@ -24,6 +24,10 @@ class BaseView extends BaseObject
     public $templateFunction;
     public $addCssFunction;
     public $addJsFunction;
+    public $addHeaderTagFunction;
+    public $changePageTitleFunction;
+    public $htmlStyleFunction;
+    public $bodyStyleFunction;
     public $createWidgetFunction;
 
     /** @var  ServerInfo ServerInfo object*/
@@ -53,6 +57,26 @@ class BaseView extends BaseObject
     {
         $baseUrl = $this->serverInfo->getData(ServerInfo::BASE_URL);
         call_user_func($this->addJsFunction, $baseUrl.'resources/js/'.$file);
+    }
+
+    protected function addHeaderTag($tag)
+    {
+        call_user_func($this->addHeaderTagFunction, $tag);
+    }
+
+    protected function changePageTitle($title)
+    {
+        call_user_func($this->changePageTitleFunction, $title);
+    }
+
+    protected function setHtmlStyle($style)
+    {
+        call_user_func($this->htmlStyleFunction, $style);
+    }
+
+    protected function setBodyStyle($style)
+    {
+        call_user_func($this->bodyStyleFunction, $style);
     }
 
     /**

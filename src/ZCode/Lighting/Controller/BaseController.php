@@ -63,6 +63,11 @@ abstract class BaseController extends BaseObject
 
     public $cssList;
     public $jsList;
+    public $headerTagList;
+
+    public $pageTitle;
+    public $bodyStyle;
+    public $htmlStyle;
 
     abstract public function run();
     abstract public function runAjax();
@@ -73,6 +78,7 @@ abstract class BaseController extends BaseObject
         $this->cssList         = [];
         $this->priorityJsList  = [];
         $this->jsList          = [];
+        $this->headerTagList   = [];
 
         $this->raw = false;
 
@@ -100,6 +106,10 @@ abstract class BaseController extends BaseObject
             $view->templateFunction     = [$this, 'getTemplate'];
             $view->addCssFunction       = [$this, 'addCss'];
             $view->addJsFunction        = [$this, 'addJs'];
+            $view->addHeaderTagFunction = [$this, 'addHeaderTag'];
+            $view->changePageTitleFunction = [$this, 'changePageTitle'];
+            $view->htmlStyleFunction = [$this, 'setHtmlStyle'];
+            $view->bodyStyleFunction = [$this, 'setBodyStyle'];
             $view->createWidgetFunction = [$this, 'createWidget'];
         }
 
@@ -265,6 +275,34 @@ abstract class BaseController extends BaseObject
     {
         if (strlen($file) > 0) {
             $this->priorityJsList[] = $file.'.js';
+        }
+    }
+
+    public function addHeaderTag($tag)
+    {
+        if (strlen($tag) > 0) {
+            $this->headerTagList[] = $tag;
+        }
+    }
+
+    public function changePageTitle($title)
+    {
+        if (strlen($title) > 0) {
+            $this->pageTitle = $title;
+        }
+    }
+
+    public function setHtmlStyle($style)
+    {
+        if (strlen($style) > 0) {
+            $this->htmlStyle = $style;
+        }
+    }
+
+    public function setBodyStyle($style)
+    {
+        if (strlen($style) > 0) {
+            $this->bodyStyle = $style;
         }
     }
 

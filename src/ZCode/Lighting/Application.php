@@ -354,6 +354,9 @@ class Application
 
     private function renderResponse($response, $ajax)
     {
+        $htmlStyle = '';
+        $bodyStyle = '';
+
         // Check if its an ajax response
         if ($ajax) {
             $this->response->json($response);
@@ -373,11 +376,31 @@ class Application
         $tmpl = $templateFactory->create(TemplateFactory::TEMPLATE);
         $tmpl->loadTemplate('main', 'resources/html');
 
-        $pageTitle = $this->config->getConfig('site', 'page_title', false);
+        // setting the page title in the module takes priority
+        if (strlen($this->module->pageTitle) > 0) {
+            $pageTitle = $this->module->pageTitle;
+        } else {
+            // if it was not set, take the page title from the config file
+            $pageTitle = $this->config->getConfig('site', 'page_title', false);
+        }
+
         $tmpl->addSearchReplace('{#PAGE_TITLE#}', $pageTitle);
+
+        // add style css to the html tag if present
+        if (strlen($this->module->htmlStyle) > 0) {
+            $htmlStyle = $this->module->htmlStyle;
+        }
+        $tmpl->addSearchReplace('{#HTML_STYLE#}', $htmlStyle);
+
+        // add style css to the body tag if present
+        if (strlen($this->module->bodyStyle) > 0) {
+            $bodyStyle = $this->module->bodyStyle;
+        }
+        $tmpl->addSearchReplace('{#BODY_STYLE#}', $bodyStyle);
 
         $cssString = '';
         $jsString  = '';
+        $headerTagString = '';
 
         // Generate Header
         $header = '';
@@ -421,6 +444,9 @@ class Application
         $jsString .= $this->processModuleJs($this->module->moduleJsList);
         $tmpl->addSearchReplace('{#JS#}', $jsString);
 
+        $headerTagString .= $this->processModuleHeaderTags($this->module->headerTagList);
+        $tmpl->addSearchReplace('{#HEADER_TAGS#}', $headerTagString);
+
         if ($this->postProc) {
             if (!$this->postProcObj->postprocessor()) {
                 return;
@@ -456,5 +482,19 @@ class Application
         }
 
         return $jsString;
+    }
+
+    private function processModuleHeaderTags(array $moduleHeaderTagList)
+    {
+        $tagString = '';
+        $numTags = sizeof($moduleHeaderTagList);
+
+        if ($numTags > 0) {
+            for ($i = 0; $i < $numTags; $i++) {
+                $tagString .= $moduleHeaderTagList[$i];
+            }
+        }
+
+        return $tagString;
     }
 }
