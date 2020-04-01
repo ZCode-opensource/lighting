@@ -18,7 +18,7 @@ abstract class BaseFactory extends BaseObject
     public $basePath;
     protected $classArray;
 
-    public function create($type)
+    public function create($type, $name = null)
     {
         $obj = $this->createObject($type);
 
@@ -31,7 +31,7 @@ abstract class BaseFactory extends BaseObject
         return $frameworkDir.$this->classArray[$type];
     }
 
-    protected function createObject($type)
+    protected function createObject($type, $name = null)
     {
         $class  = $this->getClass($type);
 

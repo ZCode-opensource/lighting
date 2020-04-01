@@ -26,7 +26,7 @@ class ProjectFactory extends BaseFactory
         $this->classArray = ['\Models',  '\Views', '\Controllers'];
     }
 
-    public function create($type, $name)
+    public function create($type, $name = null)
     {
         $obj = $this->createObject($this->getClass($type), $name);
         return $obj;
@@ -54,8 +54,9 @@ class ProjectFactory extends BaseFactory
      * @param string $name Name of the class to instantiate
      *
      * @return BaseModel|BaseView|BaseController Depending on the type, returns the model, view or controller
+     * @throws \ReflectionException
      */
-    protected function createObject($path, $name)
+    protected function createObject($path, $name = null)
     {
         $class  = $path.'\\'.$name;
         $classR = new \ReflectionClass($class);

@@ -18,7 +18,7 @@ class WidgetFactory extends BaseFactory
         return $this->basePath.'\\'.$type;
     }
 
-    protected function createObject($type)
+    protected function createObject($type, $name = null)
     {
         $class  = $this->getClass($type);
         $classR = new \ReflectionClass($class);
