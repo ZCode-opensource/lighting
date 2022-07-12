@@ -13,13 +13,12 @@
         }
     ],
     "require": {
-        "php": ">=5.5",
-        "monolog/monolog": "1.11.*"
+        "php": ">=8.0",
+        "monolog/monolog": "^3.1"
     },
     "require-dev": {
-        "phpdocumentor/phpdocumentor": "2.*",
-        "phpunit/phpunit": "5.0.*",
-        "mikey179/vfsstream": "1.5.*"
+        "phpunit/phpunit": "^9.5",
+        "mikey179/vfsstream": "^1.6"
     },
     "autoload": {
         "psr-4": {
