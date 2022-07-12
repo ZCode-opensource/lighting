@@ -1,6 +1,5 @@
 # Project
 /vendor/
-/composer.lock
 
 # Idea files
 .idea/
