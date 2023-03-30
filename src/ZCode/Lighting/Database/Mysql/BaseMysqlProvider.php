@@ -24,7 +24,7 @@ class BaseMysqlProvider extends DatabaseProvider
 
         if ($this->mysqli->connect_errno) {
             $this->connectionError = true;
-            $this->logger->addError('Failed to connect to MySQL: '.$this->mysqli->connect_error);
+            $this->logger->error('Failed to connect to MySQL: '.$this->mysqli->connect_error);
         }
 
         if (!$this->connectionError) {
@@ -34,8 +34,8 @@ class BaseMysqlProvider extends DatabaseProvider
                 $this->setQuery("SHOW STATUS WHERE `variable_name` = 'Threads_connected';");
                 $numConnections = $this->loadField('Value');
 
-                $this->logger->addDebug('Current connections: '.$numConnections);
-                $this->logger->addDebug('Server stats: '.$this->mysqli->stat());
+                $this->logger->debug('Current connections: '.$numConnections);
+                $this->logger->debug('Server stats: '.$this->mysqli->stat());
             }
 
             if ($this->forceCharset && strlen($this->charset) > 0) {

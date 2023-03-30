@@ -35,7 +35,7 @@ abstract class BaseFactory extends BaseObject
     {
         $class  = $this->getClass($type);
 
-        $this->logger->addDebug('Creating object: '.$this->classArray[$type]);
+        $this->logger->debug('Creating object: '.$this->classArray[$type]);
 
         $classR = new \ReflectionClass($class);
         $object = $classR->newInstance($this->logger);

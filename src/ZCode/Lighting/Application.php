@@ -83,17 +83,17 @@ class Application
         $this->config      = $this->mainFactory->getConfiguration();
         $this->logger      = $this->mainFactory->getLogger();
 
-        $this->logger->addInfo('Logger initialized.');
-        $this->logger->addInfo('Initializing application.');
+        $this->logger->info('Logger initialized.');
+        $this->logger->info('Initializing application.');
 
         if ($this->config->error) {
             // TODO: Make an error showing system
-            $this->logger->addError("Couldn't load configuration file");
+            $this->logger->error("Couldn't load configuration file");
             return;
         }
 
         $displayErrors = $this->getDisplayErrors();
-        $this->logger->addDebug('Setting PHP diplay errors to: '.$displayErrors);
+        $this->logger->debug('Setting PHP diplay errors to: '.$displayErrors);
         ini_set('display_errors', $displayErrors);
 
         $this->request    = $this->mainFactory->create(MainFactory::REQUEST);
@@ -120,7 +120,7 @@ class Application
         $defaultModule = $this->config->getConfig('application', 'default_module', false);
 
         if ($defaultModule === null || strlen($defaultModule) === 0) {
-            $this->logger->addError('Default module not found in configuration file.');
+            $this->logger->error('Default module not found in configuration file.');
             throw new \Exception('Default module not found in configuration file.');
         }
 

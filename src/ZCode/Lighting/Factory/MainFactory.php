@@ -11,6 +11,7 @@
 
 namespace ZCode\Lighting\Factory;
 
+use Monolog\Level;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use ZCode\Lighting\Configuration\Configuration;
@@ -59,16 +60,18 @@ class MainFactory extends BaseFactory
                 }
 
                 if (is_writable($logDir.$logFile)) {
+                    $this->logger = new Logger('Main');
+                    
                     $this->logger->pushHandler(new StreamHandler('app.log', $logLevel));
-                    $this->logger->addDebug('Logging system ready, MainFactory created.');
+                    $this->logger->debug('Logging system ready, MainFactory created.');
                 } else {
-                    if ($logLevel === Logger::DEBUG) {
+                    if ($logLevel === Level::Debug) {
                         echo "Log file is not writable.";
                     }
                 }
 
             } else {
-                if ($logLevel === Logger::DEBUG) {
+                if ($logLevel === Level::Debug) {
                     echo "Log file and log directory configuration not found.";
                 }
             }
@@ -105,29 +108,29 @@ class MainFactory extends BaseFactory
     private function getLogLevel()
     {
         $logLevel      = $this->config->getConfig('log', 'log_level');
-        $logLevelValue = Logger::ERROR;
+        $logLevelValue = Level::Error;
 
         switch ($logLevel) {
             case 'debug':
-                $logLevelValue = Logger::DEBUG;
+                $logLevelValue = Level::Debug;
                 break;
             case 'info':
-                $logLevelValue = Logger::INFO;
+                $logLevelValue = Level::Info;
                 break;
             case 'notice':
-                $logLevelValue = Logger::NOTICE;
+                $logLevelValue = Level::Notice;
                 break;
             case 'warning':
-                $logLevelValue = Logger::WARNING;
+                $logLevelValue = Level::Warning;
                 break;
             case 'error':
-                $logLevelValue = Logger::ERROR;
+                $logLevelValue = Level::Error;
                 break;
             case 'critical':
-                $logLevelValue = Logger::CRITICAL;
+                $logLevelValue = Level::Critical;
                 break;
             case 'emergency':
-                $logLevelValue = Logger::EMERGENCY;
+                $logLevelValue = Level::Emergency;
                 break;
         }
 

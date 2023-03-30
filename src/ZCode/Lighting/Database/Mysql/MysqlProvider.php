@@ -132,15 +132,15 @@ class MysqlProvider extends BaseMysqlProvider implements DatabaseInterface
     private function executeInternalQuery($query, $params)
     {
         if (!($stmt = $this->mysqli->prepare($query))) {
-            $this->logger->addError($this->mysqli->error);
-            $this->logger->addError('Query: '.$query);
+            $this->logger->error($this->mysqli->error);
+            $this->logger->error('Query: '.$query);
             return false;
         }
 
         call_user_func_array([$stmt, 'bind_param'], $params);
 
         if (!$stmt->execute()) {
-            $this->logger->addError($this->mysqli->error);
+            $this->logger->error($this->mysqli->error);
             return false;
         }
 

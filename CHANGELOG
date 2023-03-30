@@ -1,3 +1,9 @@
+v 0.0.3
+    - Updated Monolog to latest version
+    - Updated phpunit to latest version
+    - Fixed errors due to new monolog level system
+    - Added router.php for developing with php built-in web server 
+
 v 0.0.2
 
 v 0.0.1

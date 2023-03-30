@@ -94,7 +94,7 @@ class BaseModule extends BaseObject
 
         // If null, load error module (that could also be the default module)
         if ($rClass === null) {
-            $this->logger->addDebug('Trying to load error module: '.$errorModule);
+            $this->logger->debug('Trying to load error module: '.$errorModule);
             $rClass       = $this->getModuleClass($errorModule, $projectNameSpace);
             $moduleLoaded = $errorModule;
         }
@@ -104,7 +104,7 @@ class BaseModule extends BaseObject
             return false;
         }
 
-        $this->logger->addDebug('Module loaded: '.$moduleLoaded);
+        $this->logger->debug('Module loaded: '.$moduleLoaded);
 
         $this->resourcePath  = 'src/'.str_replace('\\', '/', $projectNameSpace);
         $this->resourcePath .= '/Modules/'.$moduleLoaded.'/resources/';
@@ -131,7 +131,7 @@ class BaseModule extends BaseObject
         try {
             $rClass = new \ReflectionClass($class);
         } catch (\ReflectionException $ex) {
-            $this->logger->addError('Failed to load module: '.$module);
+            $this->logger->error('Failed to load module: '.$module);
             $rClass = null;
         }
 
@@ -141,7 +141,7 @@ class BaseModule extends BaseObject
     public function getResponse($errorModule)
     {
         if (!$this->moduleInit($errorModule)) {
-            $this->logger->addError('Could not load any module.');
+            $this->logger->error('Could not load any module.');
             return '';
         }
 
